@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Wizard de Reportes - Formulario -->
+        <record id="view_report_wizard_form" model="ir.ui.view">
+            <field name="name">bh360.report.wizard.form</field>
+            <field name="model">bh360.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Generar Reporte">
+                    <group>
+                        <field name="report_type"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="company_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_generate_report" string="Generar" type="object" class="btn-primary"/>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción Wizard -->
+        <record id="action_report_wizard" model="ir.actions.act_window">
+            <field name="name">Generar Reporte</field>
+            <field name="res_model">bh360.report.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>

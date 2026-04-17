@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Vista Formulario Dashboard -->
+        <record id="view_kpi_dashboard_form" model="ir.ui.view">
+            <field name="name">bh360.kpi.dashboard.form</field>
+            <field name="model">bh360.kpi.dashboard</field>
+            <field name="arch" type="xml">
+                <form string="Dashboard de KPIs">
+                    <header>
+                        <button name="action_refresh_dashboard" string="🔄 Actualizar KPIs" type="object" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <group>
+                            <group string="💰 KPIs Financieros">
+                                <field name="total_revenue"/>
+                                <field name="total_expenses"/>
+                                <field name="net_profit"/>
+                                <field name="cash_flow"/>
+                            </group>
+                            <group string="📦 KPIs de Inventario">
+                                <field name="total_stock_value"/>
+                                <field name="low_stock_items"/>
+                                <field name="out_of_stock_items"/>
+                            </group>
+                            <group string="🤝 KPIs de Ventas">
+                                <field name="total_sales"/>
+                                <field name="pending_quotes"/>
+                                <field name="conversion_rate"/>
+                            </group>
+                            <group string="👥 KPIs de RRHH">
+                                <field name="total_employees"/>
+                                <field name="employees_on_leave"/>
+                                <field name="attendance_rate"/>
+                            </group>
+                            <group string="📋 KPIs de Proyectos">
+                                <field name="active_projects"/>
+                                <field name="completed_projects"/>
+                                <field name="project_budget_usage"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="last_updated"/>
+                            <field name="company_id"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Acción Dashboard -->
+        <record id="action_kpi_dashboard" model="ir.actions.act_window">
+            <field name="name">Dashboard de KPIs</field>
+            <field name="res_model">bh360.kpi.dashboard</field>
+            <field name="view_mode">form</field>
+            <field name="target">main</field>
+        </record>
+    </data>
+</odoo>

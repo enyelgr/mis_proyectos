@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Alertas de Inventario - Formulario -->
+        <record id="view_inventory_alert_form" model="ir.ui.view">
+            <field name="name">bh360.inventory.alert.form</field>
+            <field name="model">bh360.inventory.alert</field>
+            <field name="arch" type="xml">
+                <form string="Alerta de Inventario">
+                    <header>
+                        <button name="action_resolve" string="Resolver" type="object" class="btn-success" invisible="state not in ['new', 'in_progress']"/>
+                        <button name="action_ignore" string="Ignorar" type="object" class="btn-secondary" invisible="state != 'new'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,in_progress,resolved"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="alert_type"/>
+                                <field name="priority"/>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="current_quantity"/>
+                                <field name="minimum_quantity"/>
+                                <field name="maximum_quantity"/>
+                                <field name="warehouse_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                            <field name="action_taken"/>
+                        </group>
+                        <group string="Resolución">
+                            <field name="resolved_by"/>
+                            <field name="resolved_date"/>
+                        </group>
+                        <field name="company_id" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_inventory_alert_list" model="ir.ui.view">
+            <field name="name">bh360.inventory.alert.list</field>
+            <field name="model">bh360.inventory.alert</field>
+            <field name="arch" type="xml">
+                <list string="Alertas de Inventario">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <field name="alert_type"/>
+                    <field name="priority"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Acción Alertas -->
+        <record id="action_inventory_alert" model="ir.actions.act_window">
+            <field name="name">Alertas de Inventario</field>
+            <field name="res_model">bh360.inventory.alert</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

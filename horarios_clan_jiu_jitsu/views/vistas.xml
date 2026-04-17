@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_instructor_list" model="ir.ui.view">
+        <field name="name">gym.instructor.list</field>
+        <field name="model">gym.instructor</field>
+        <field name="arch" type="xml">
+            <list string="Instructores" class="clan_jiujitsu_watermark">
+                <field name="name"/>
+                <field name="especialidad"/>
+                <field name="email"/>
+                <field name="telefono"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_instructor_form" model="ir.ui.view">
+        <field name="name">gym.instructor.form</field>
+        <field name="model">gym.instructor</field>
+        <field name="arch" type="xml">
+            <form string="Instructor" class="clan_jiujitsu_watermark">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_dummy" icon="fa-clock-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="horas_actual_mes"/> h</span>
+                                <span class="o_stat_text">Este Mes</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_dummy" icon="fa-sun-o">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="horas_hoy"/> h</span>
+                                <span class="o_stat_text">Hoy</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" type="object" name="action_dummy" icon="fa-exclamation-circle">
+                            <div class="o_stat_info">
+                                <span class="o_stat_value"><field name="faltas_actual_mes"/></span>
+                                <span class="o_stat_text">Faltas</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="especialidad"/>
+                            <field name="email"/>
+                        </group>
+                        <group>
+                            <field name="telefono"/>
+                            <field name="active"/>
+                            <field name="image" widget="image" class="oe_avatar" options="{'size': [128, 128]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Horarios Asignados">
+                            <field name="horario_ids">
+                                <list editable="bottom">
+                                    <field name="fecha"/>
+                                    <field name="hora_inicio_hora"/>
+                                    <field name="hora_inicio_ampm"/>
+                                    <field name="hora_fin_hora"/>
+                                    <field name="hora_fin_ampm"/>
+                                    <field name="area"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_horario_calendar" model="ir.ui.view">
+        <field name="name">gym.horario.calendar</field>
+        <field name="model">gym.horario</field>
+        <field name="arch" type="xml">
+            <calendar js_class="gym_calendar" string="Horario Semanal" date_start="fecha_hora_inicio" date_stop="fecha_hora_fin" color="instructor_id" mode="week" event_open_popup="true">
+                <field name="name"/>
+                <field name="instructor_id"/>
+                <field name="area"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_horario_search" model="ir.ui.view">
+        <field name="name">gym.horario.search</field>
+        <field name="model">gym.horario</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="fecha"/>
+                <field name="area"/>
+                <field name="instructor_id"/>
+                <filter name="today" string="Hoy" domain="[('fecha', '=', context_today)]"/>
+                <filter name="programado" string="Programado" domain="[('state', '=', 'programado')]"/>
+                <filter name="cancelado" string="Cancelado" domain="[('state', '=', 'cancelado')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_horario_kanban" model="ir.ui.view">
+        <field name="name">gym.horario.kanban</field>
+        <field name="model">gym.horario</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="dia_semana" class="o_kanban_small_column schedule_board clan_jiujitsu_watermark">
+                <field name="instructor_id"/>
+                <field name="dia_semana"/>
+                <field name="fecha"/>
+                <field name="area"/>
+                <field name="hora_inicio"/>
+                <field name="hora_fin"/>
+                <field name="hora_inicio_hora"/>
+                <field name="hora_inicio_ampm"/>
+                <field name="hora_fin_hora"/>
+                <field name="hora_fin_ampm"/>
+                <field name="top_position"/>
+                <field name="block_height"/>
+                <field name="state"/>
+                <field name="duration"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="schedule-card" t-attf-style="margin-top: #{record.top_position.raw_value}px; min-height: #{record.block_height.raw_value}px;">
+                            <div class="schedule-card-header">
+                                <field name="name"/>
+                            </div>
+                            <div class="schedule-card-body">
+                                <p><strong>Instructor:</strong> <field name="instructor_id"/></p>
+                                <p><strong>Fecha:</strong> <t t-esc="record.fecha.raw_value"/></p>
+                                <p><strong>Hora:</strong> <t t-esc="record.hora_inicio_hora.raw_value"/> <t t-esc="record.hora_inicio_ampm.raw_value"/> - <t t-esc="record.hora_fin_hora.raw_value"/> <t t-esc="record.hora_fin_ampm.raw_value"/></p>
+                                <p><strong>Duración:</strong> <t t-esc="record.duration.raw_value"/> hrs</p>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_horario_list" model="ir.ui.view">
+        <field name="name">gym.horario.list</field>
+        <field name="model">gym.horario</field>
+        <field name="arch" type="xml">
+            <list string="Horarios Semanal" decoration-danger="state=='cancelado'" decoration-success="state=='completado'" class="clan_jiujitsu_watermark">
+                <field name="name"/>
+                <field name="fecha"/>
+                <field name="dia_semana"/>
+                <field name="hora_inicio_hora"/>
+                <field name="hora_inicio_ampm"/>
+                <field name="hora_fin_hora"/>
+                <field name="hora_fin_ampm"/>
+                <field name="area"/>
+                <field name="instructor_id"/>
+                <field name="state"/>
+                <field name="duration"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_horario_form" model="ir.ui.view">
+        <field name="name">gym.horario.form</field>
+        <field name="model">gym.horario</field>
+        <field name="arch" type="xml">
+            <form string="Bloque de Clase" class="clan_jiujitsu_watermark">
+                <header>
+                    <button name="%(action_gym_horario_change_wizard)d" type="action" string="Validar Cambio de Horario" class="btn-warning" context="{'default_horario_id': id, 'default_fecha': fecha, 'default_hora_inicio': hora_inicio, 'default_hora_fin': hora_fin, 'default_area': area}"/>
+                    <button name="action_marcar_ausencia" type="object" string="Marcar Ausencia/Falta" class="oe_highlight" invisible="state != 'programado'"/>
+                    <button name="action_reprogramar" type="object" string="Reactivar Clase" invisible="state != 'cancelado'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="programado,cancelado,completado"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="fecha"/>
+                            <field name="dia_semana" readonly="1"/>
+                            <field name="hora_inicio_hora"/>
+                            <field name="hora_inicio_ampm"/>
+                            <field name="hora_fin_hora"/>
+                            <field name="hora_fin_ampm"/>
+                        </group>
+                        <group>
+                            <field name="area"/>
+                            <field name="instructor_id"/>
+                            <field name="duration" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_horarios" model="ir.actions.act_window">
+        <field name="name">Horarios de Clases</field>
+        <field name="res_model">gym.horario</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_horario_calendar"/>
+        <field name="search_view_id" ref="view_horario_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Crea el primer bloque de horario</p>
+            <p>Administra horarios por área, fecha e instructor.</p>
+        </field>
+    </record>
+
+    <record id="action_horarios_area_1" model="ir.actions.act_window">
+        <field name="name">Horarios Área 1</field>
+        <field name="res_model">gym.horario</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_horario_calendar"/>
+        <field name="search_view_id" ref="view_horario_search"/>
+        <field name="domain">[('area', '=', '1')]</field>
+    </record>
+
+    <record id="action_horarios_area_2" model="ir.actions.act_window">
+        <field name="name">Horarios Área 2</field>
+        <field name="res_model">gym.horario</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_horario_calendar"/>
+        <field name="search_view_id" ref="view_horario_search"/>
+        <field name="domain">[('area', '=', '2')]</field>
+    </record>
+
+    <record id="action_horarios_area_3" model="ir.actions.act_window">
+        <field name="name">Horarios Área 3</field>
+        <field name="res_model">gym.horario</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_horario_calendar"/>
+        <field name="search_view_id" ref="view_horario_search"/>
+        <field name="domain">[('area', '=', '3')]</field>
+    </record>
+
+    <record id="action_horarios_area_4" model="ir.actions.act_window">
+        <field name="name">Horarios Área 4</field>
+        <field name="res_model">gym.horario</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="view_id" ref="view_horario_calendar"/>
+        <field name="search_view_id" ref="view_horario_search"/>
+        <field name="domain">[('area', '=', '4')]</field>
+    </record>
+
+    <record id="action_instructores" model="ir.actions.act_window">
+        <field name="name">Instructores</field>
+        <field name="res_model">gym.instructor</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_instructor_list"/>
+    </record>
+
+
+    <menuitem id="menu_gym_root" name="Gimnasio" sequence="10" web_icon="horarios_clan_jiu_jitsu,static/description/icon.png"/>
+    <menuitem id="menu_gym_horarios" name="Horarios" parent="menu_gym_root" action="action_horarios" sequence="10"/>
+    <menuitem id="menu_gym_horarios_area_1" name="Área 1" parent="menu_gym_horarios" action="action_horarios_area_1" sequence="1"/>
+    <menuitem id="menu_gym_horarios_area_2" name="Área 2" parent="menu_gym_horarios" action="action_horarios_area_2" sequence="2"/>
+    <menuitem id="menu_gym_horarios_area_3" name="Área 3" parent="menu_gym_horarios" action="action_horarios_area_3" sequence="3"/>
+    <menuitem id="menu_gym_horarios_area_4" name="Área 4" parent="menu_gym_horarios" action="action_horarios_area_4" sequence="4"/>
+    <menuitem id="menu_gym_instructores" name="Instructores" parent="menu_gym_root" action="action_instructores" sequence="20"/>
+    <menuitem id="menu_gym_report_wizard" name="Descargar Cartelera" parent="menu_gym_root" action="action_gym_report_wizard" sequence="30"/>
+</odoo>

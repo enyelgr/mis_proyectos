@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- VISTA CHANGE WIZARD -->
+    <record id="view_gym_horario_change_wizard_form" model="ir.ui.view">
+        <field name="name">gym.horario.change.wizard.form</field>
+        <field name="model">gym.horario.change.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Validador de Cambio de Horario">
+                <sheet>
+                    <p class="text-muted">Introduce el nuevo horario que deseas para verificar si está disponible antes de guardarlo definitivamente.</p>
+                    <group>
+                        <group>
+                            <field name="horario_id" invisible="1"/>
+                            <field name="fecha"/>
+                            <field name="area"/>
+                        </group>
+                        <group>
+                            <field name="hora_inicio"/>
+                            <field name="hora_fin"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="is_valid">
+                         <field name="status_message" nolabel="1"/>
+                    </div>
+                    <div class="alert alert-success" role="alert" invisible="not is_valid">
+                         <field name="status_message" nolabel="1"/>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_apply_change" type="object" string="Aplicar Cambio" class="btn-primary" invisible="not is_valid"/>
+                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gym_horario_change_wizard" model="ir.actions.act_window">
+        <field name="name">Modificar Horario Seguro</field>
+        <field name="res_model">gym.horario.change.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- VISTA REPORT WIZARD -->
+    <record id="view_gym_report_wizard_form" model="ir.ui.view">
+        <field name="name">gym.horario.report.wizard.form</field>
+        <field name="model">gym.horario.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Descargar Cartelera Semanal">
+                <sheet>
+                    <p class="text-muted">Selecciona el área para la cual deseas descargar el PDF de los horarios planificados.</p>
+                    <group>
+                        <field name="area" widget="radio"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_print_report" type="object" string="Generar PDF" class="btn-primary"/>
+                    <button string="Cerrar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gym_report_wizard" model="ir.actions.act_window">
+        <field name="name">Cartelera de Horarios PDF</field>
+        <field name="res_model">gym.horario.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+
+</odoo>

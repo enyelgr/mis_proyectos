@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Documentos - Formulario -->
+        <record id="view_document_form" model="ir.ui.view">
+            <field name="name">bh360.document.form</field>
+            <field name="model">bh360.document</field>
+            <field name="arch" type="xml">
+                <form string="Documento">
+                    <header>
+                        <button name="action_activate" string="Activar" type="object" class="btn-primary" invisible="status != 'draft'"/>
+                        <button name="action_archive" string="Archivar" type="object" class="btn-secondary" invisible="status != 'active'"/>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,active,archived"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="document_number" readonly="1"/>
+                                <field name="category_id"/>
+                                <field name="document_file"/>
+                                <field name="document_filename"/>
+                                <field name="document_type"/>
+                            </group>
+                            <group>
+                                <field name="owner_id"/>
+                                <field name="authorized_users" widget="many2many_tags"/>
+                                <field name="tags" widget="many2many_tags"/>
+                                <field name="issue_date"/>
+                                <field name="expiry_date"/>
+                                <field name="version"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <field name="company_id" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Documentos - Lista -->
+        <record id="view_document_list" model="ir.ui.view">
+            <field name="name">bh360.document.list</field>
+            <field name="model">bh360.document</field>
+            <field name="arch" type="xml">
+                <list string="Documentos">
+                    <field name="name"/>
+                    <field name="document_number"/>
+                    <field name="category_id"/>
+                    <field name="owner_id"/>
+                    <field name="status"/>
+                    <field name="create_date"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Acción Documentos -->
+        <record id="action_document" model="ir.actions.act_window">
+            <field name="name">Documentos</field>
+            <field name="res_model">bh360.document</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Acción Categorías de Documentos -->
+        <record id="action_document_category" model="ir.actions.act_window">
+            <field name="name">Categorías de Documentos</field>
+            <field name="res_model">bh360.document.category</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

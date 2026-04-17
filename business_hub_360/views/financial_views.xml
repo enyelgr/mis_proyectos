@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Transacciones Financieras - Formulario -->
+        <record id="view_financial_transaction_form" model="ir.ui.view">
+            <field name="name">bh360.financial.transaction.form</field>
+            <field name="model">bh360.financial.transaction</field>
+            <field name="arch" type="xml">
+                <form string="Transacción Financiera">
+                    <header>
+                        <button name="action_submit_for_approval" string="Enviar a Aprobación" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="Aprobar" type="object" class="btn-success" invisible="state != 'pending'"/>
+                        <button name="action_reject" string="Rechazar" type="object" class="btn-danger" invisible="state != 'pending'"/>
+                        <button name="action_post" string="Contabilizar" type="object" class="btn-info" invisible="state != 'approved'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,pending,approved,posted"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="transaction_type"/>
+                                <field name="amount"/>
+                                <field name="currency_id"/>
+                                <field name="date"/>
+                            </group>
+                            <group>
+                                <field name="category_id"/>
+                                <field name="partner_id"/>
+                                <field name="account_id"/>
+                                <field name="journal_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                        </group>
+                        <group string="Aprobación">
+                            <field name="approved_by"/>
+                            <field name="approved_date"/>
+                        </group>
+                        <field name="company_id" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Transacciones Financieras - Lista -->
+        <record id="view_financial_transaction_list" model="ir.ui.view">
+            <field name="name">bh360.financial.transaction.list</field>
+            <field name="model">bh360.financial.transaction</field>
+            <field name="arch" type="xml">
+                <list string="Transacciones Financieras">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="transaction_type"/>
+                    <field name="amount"/>
+                    <field name="partner_id"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Acción Transacciones -->
+        <record id="action_financial_transaction" model="ir.actions.act_window">
+            <field name="name">Transacciones Financieras</field>
+            <field name="res_model">bh360.financial.transaction</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+        <!-- Categorías Financieras - Acción -->
+        <record id="action_financial_category" model="ir.actions.act_window">
+            <field name="name">Categorías Financieras</field>
+            <field name="res_model">bh360.financial.category</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

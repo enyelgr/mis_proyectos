@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Secuencia: Transacciones Financieras -->
+        <record id="seq_bh360_financial_transaction" model="ir.sequence">
+            <field name="name">Business Hub - Transacciones</field>
+            <field name="code">bh360.financial.transaction</field>
+            <field name="prefix">TRX/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia: Alertas de Inventario -->
+        <record id="seq_bh360_inventory_alert" model="ir.sequence">
+            <field name="name">Business Hub - Alertas Inventario</field>
+            <field name="code">bh360.inventory.alert</field>
+            <field name="prefix">ALR/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia: Documentos -->
+        <record id="seq_bh360_document" model="ir.sequence">
+            <field name="name">Business Hub - Documentos</field>
+            <field name="code">bh360.document</field>
+            <field name="prefix">DOC/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia: Activos Fijos -->
+        <record id="seq_bh360_fixed_asset" model="ir.sequence">
+            <field name="name">Business Hub - Activos Fijos</field>
+            <field name="code">bh360.fixed.asset</field>
+            <field name="prefix">AST/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia: Reclamaciones de Gastos -->
+        <record id="seq_bh360_expense_claim" model="ir.sequence">
+            <field name="name">Business Hub - Gastos</field>
+            <field name="code">bh360.expense.claim</field>
+            <field name="prefix">EXP/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Secuencia: Tickets de Soporte -->
+        <record id="seq_bh360_support_ticket" model="ir.sequence">
+            <field name="name">Business Hub - Tickets</field>
+            <field name="code">bh360.support.ticket</field>
+            <field name="prefix">TKT/</field>
+            <field name="padding">6</field>
+            <field name="number_increment">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

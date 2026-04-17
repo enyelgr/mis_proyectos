@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Reclamaciones de Gastos - Formulario -->
+        <record id="view_expense_claim_form" model="ir.ui.view">
+            <field name="name">bh360.expense.claim.form</field>
+            <field name="model">bh360.expense.claim</field>
+            <field name="arch" type="xml">
+                <form string="Reclamación de Gastos">
+                    <header>
+                        <button name="action_submit" string="Enviar" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_approve" string="Aprobar" type="object" class="btn-success" invisible="state != 'submitted'"/>
+                        <button name="action_reject" string="Rechazar" type="object" class="btn-danger" invisible="state != 'submitted'"/>
+                        <button name="action_pay" string="Pagar" type="object" class="btn-info" invisible="state != 'approved'"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved,paid"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="employee_id"/>
+                                <field name="user_id"/>
+                                <field name="claim_date"/>
+                            </group>
+                            <group>
+                                <field name="period_start"/>
+                                <field name="period_end"/>
+                                <field name="total_amount"/>
+                                <field name="currency_id"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="line_ids">
+                                <list string="Líneas de Gasto">
+                                    <field name="date"/>
+                                    <field name="category_id"/>
+                                    <field name="description"/>
+                                    <field name="amount"/>
+                                    <field name="payment_mode"/>
+                                </list>
+                            </field>
+                        </group>
+                        <group>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                            <field name="notes"/>
+                        </group>
+                        <group string="Aprobación">
+                            <field name="approved_by"/>
+                            <field name="approved_date"/>
+                            <field name="paid_date"/>
+                        </group>
+                        <field name="company_id" invisible="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Reclamaciones de Gastos - Lista -->
+        <record id="view_expense_claim_list" model="ir.ui.view">
+            <field name="name">bh360.expense.claim.list</field>
+            <field name="model">bh360.expense.claim</field>
+            <field name="arch" type="xml">
+                <list string="Reclamaciones de Gastos">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="claim_date"/>
+                    <field name="total_amount"/>
+                    <field name="state"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Acción Gastos -->
+        <record id="action_expense_claim" model="ir.actions.act_window">
+            <field name="name">Gastos de Empleados</field>
+            <field name="res_model">bh360.expense.claim</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

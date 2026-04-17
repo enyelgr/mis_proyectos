@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Menú Principal -->
+        <menuitem id="menu_business_hub_360_root"
+                  name="🏢 Business Hub 360°"
+                  sequence="1"
+                  web_icon="business_hub_360,static/description/icon.png"/>
+
+        <!-- ==================== DASHBOARD ==================== -->
+        <menuitem id="menu_dashboard"
+                  name="📊 Dashboard"
+                  parent="menu_business_hub_360_root"
+                  sequence="1"/>
+
+        <menuitem id="menu_dashboard_kpi"
+                  name="KPIs Empresariales"
+                  parent="menu_dashboard"
+                  action="action_kpi_dashboard"
+                  sequence="1"/>
+
+        <!-- ==================== FINANZAS ==================== -->
+        <menuitem id="menu_financial"
+                  name="💰 Finanzas"
+                  parent="menu_business_hub_360_root"
+                  sequence="2"/>
+        
+        <menuitem id="menu_financial_transactions"
+                  name="Transacciones"
+                  parent="menu_financial"
+                  action="action_financial_transaction"
+                  sequence="1"/>
+
+        <!-- ==================== INVENTARIO ==================== -->
+        <menuitem id="menu_inventory"
+                  name="📦 Inventario"
+                  parent="menu_business_hub_360_root"
+                  sequence="3"/>
+        
+        <menuitem id="menu_inventory_alerts"
+                  name="Alertas de Stock"
+                  parent="menu_inventory"
+                  action="action_inventory_alert"
+                  sequence="1"/>
+
+        <!-- ==================== DOCUMENTOS ==================== -->
+        <menuitem id="menu_documents"
+                  name="📁 Documentos"
+                  parent="menu_business_hub_360_root"
+                  sequence="4"/>
+        
+        <menuitem id="menu_documents_all"
+                  name="Todos los Documentos"
+                  parent="menu_documents"
+                  action="action_document"
+                  sequence="1"/>
+
+        <!-- ==================== ACTIVOS ==================== -->
+        <menuitem id="menu_assets"
+                  name="🖥️ Activos Fijos"
+                  parent="menu_business_hub_360_root"
+                  sequence="5"/>
+        
+        <menuitem id="menu_assets_all"
+                  name="Todos los Activos"
+                  parent="menu_assets"
+                  action="action_fixed_asset"
+                  sequence="1"/>
+
+        <!-- ==================== RRHH ==================== -->
+        <menuitem id="menu_hr"
+                  name="👥 RRHH"
+                  parent="menu_business_hub_360_root"
+                  sequence="6"/>
+        
+        <menuitem id="menu_hr_expenses"
+                  name="Gastos de Empleados"
+                  parent="menu_hr"
+                  action="action_expense_claim"
+                  sequence="1"/>
+
+        <!-- ==================== SOPORTE ==================== -->
+        <menuitem id="menu_support"
+                  name="🎫 Soporte"
+                  parent="menu_business_hub_360_root"
+                  sequence="7"/>
+        
+        <menuitem id="menu_support_tickets"
+                  name="Tickets"
+                  parent="menu_support"
+                  action="action_support_ticket"
+                  sequence="1"/>
+
+        <!-- ==================== CONFIGURACIÓN ==================== -->
+        <menuitem id="menu_configuration"
+                  name="⚙️ Configuración"
+                  parent="menu_business_hub_360_root"
+                  sequence="100"/>
+    </data>
+</odoo>

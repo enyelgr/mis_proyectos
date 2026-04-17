@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gym_instructor_user,gym.instructor user,model_gym_instructor,base.group_user,1,1,1,1
+access_gym_horario_user,gym.horario user,model_gym_horario,base.group_user,1,1,1,1
+access_gym_horario_change_wizard,gym.horario.change.wizard,model_gym_horario_change_wizard,base.group_user,1,1,1,1
+access_gym_horario_report_wizard,gym.horario.report.wizard,model_gym_horario_report_wizard,base.group_user,1,1,1,1

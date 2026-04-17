@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_horario_semanal" model="ir.actions.report">
+        <field name="name">Cartelera Semanal por Área</field>
+        <field name="model">gym.horario.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">horarios_clan_jiu_jitsu.report_horario_semanal_template</field>
+        <field name="report_file">horarios_clan_jiu_jitsu.report_horario_semanal_template</field>
+        <field name="print_report_name">'Horario_Cartelera_Area_' + object.area</field>
+        <field name="binding_model_id" ref="model_gym_horario_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_horario_semanal_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <style>
+                    .table-cartelera {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 12px;
+                    }
+                    .table-cartelera th, .table-cartelera td {
+                        border: 1px solid #ccc;
+                        padding: 8px;
+                        text-align: center;
+                    }
+                    .table-cartelera th {
+                        background-color: #2c3e50;
+                        color: white;
+                    }
+                    .hour-col {
+                        background-color: #f8f9fa;
+                        font-weight: bold;
+                        width: 10%;
+                    }
+                    .class-block {
+                        background-color: #e2f0d9;
+                        border-radius: 4px;
+                        padding: 4px;
+                        font-weight: bold;
+                        color: #2e7d32;
+                    }
+                </style>
+                <div class="page">
+                    <div class="text-center" style="background-color: #000000; padding: 10px 0; margin-bottom: 25px; border-radius: 5px; width: 100%;">
+                        <img src="/horarios_clan_jiu_jitsu/static/src/img/logo_clan.png" style="height: 280px; width: auto;"/>
+                    </div>
+                    <h2 class="text-center mb-4">Cartelera de Horarios: <t t-esc="area_name"/></h2>
+                    <table class="table-cartelera">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Lunes</th>
+                                <th>Martes</th>
+                                <th>Miércoles</th>
+                                <th>Jueves</th>
+                                <th>Viernes</th>
+                                <th>Sábado</th>
+                                <th>Domingo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="hours_range" t-as="hour">
+                                <tr>
+                                    <td class="hour-col"><t t-esc="hour"/>:00</td>
+                                    <t t-foreach="['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']" t-as="day">
+                                        <td>
+                                            <!-- Check if there is a class for this day and hour -->
+                                            <t t-set="class_found" t-value="False"/>
+                                            <t t-foreach="horarios" t-as="h">
+                                                <t t-if="h.dia_semana == day and h.hora_inicio &lt;= hour and h.hora_fin &gt; hour">
+                                                    <div class="class-block">
+                                                        <t t-esc="h.instructor_id.name"/><br/>
+                                                        <small><t t-esc="'%02d:00 - %02d:00' % (int(h.hora_inicio), int(h.hora_fin))"/></small>
+                                                    </div>
+                                                    <t t-set="class_found" t-value="True"/>
+                                                </t>
+                                            </t>
+                                            <t t-if="not class_found">
+                                                <span class="text-muted">-</span>
+                                            </t>
+                                        </td>
+                                    </t>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>
