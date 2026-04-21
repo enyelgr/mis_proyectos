@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="horarios_clan_jiu_jitsu.Dashboard" owl="1">
+        <div class="gym-dashboard-wrapper">
+            <div class="gym-dashboard-header">
+                <h1>Seleccione el Área a Gestionar</h1>
+                <p>Bienvenido al sistema de horarios de Clan Jiu Jitsu</p>
+            </div>
+            
+            <div class="gym-dashboard-container">
+                <!-- Area 1 -->
+                <div class="gym-area-card" t-on-click="() => this.openArea('1')">
+                    <div class="gym-area-image" style="background-image: url('/horarios_clan_jiu_jitsu/static/description/area_1.png');">
+                        <div class="gym-area-overlay"></div>
+                    </div>
+                    <div class="gym-area-content">
+                        <h2>Área 1</h2>
+                        <span class="gym-area-btn">Ver Horarios <i class="fa fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Area 2 -->
+                <div class="gym-area-card" t-on-click="() => this.openArea('2')">
+                    <div class="gym-area-image" style="background-image: url('/horarios_clan_jiu_jitsu/static/description/area_2.png');">
+                        <div class="gym-area-overlay"></div>
+                    </div>
+                    <div class="gym-area-content">
+                        <h2>Área 2</h2>
+                        <span class="gym-area-btn">Ver Horarios <i class="fa fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Area 3 -->
+                <div class="gym-area-card" t-on-click="() => this.openArea('3')">
+                    <div class="gym-area-image" style="background-image: url('/horarios_clan_jiu_jitsu/static/description/area_3.png');">
+                        <div class="gym-area-overlay"></div>
+                    </div>
+                    <div class="gym-area-content">
+                        <h2>Área 3</h2>
+                        <span class="gym-area-btn">Ver Horarios <i class="fa fa-arrow-right"></i></span>
+                    </div>
+                </div>
+
+                <!-- Area 4 -->
+                <div class="gym-area-card" t-on-click="() => this.openArea('4')">
+                    <div class="gym-area-image" style="background-image: url('/horarios_clan_jiu_jitsu/static/description/area_4.png');">
+                        <div class="gym-area-overlay"></div>
+                    </div>
+                    <div class="gym-area-content">
+                        <h2>Área 4</h2>
+                        <span class="gym-area-btn">Ver Horarios <i class="fa fa-arrow-right"></i></span>
+                    </div>
+                </div>            </div>
+
+            <!-- Sección de Inteligencia Sensei -->
+            <div class="ai-insight-panel" t-on-click="openAISensei">
+                <div class="ai-insight-glow"></div>
+                <div class="ai-insight-content">
+                    <div class="ai-brain-icon pulsate-brain">
+                        <i class="fa fa-braille"></i>
+                    </div>
+                    <div class="ai-insight-text">
+                        <h3>DOJO VISION AI</h3>
+                        <p>Planes estratégicos, mejoras del dojo y visiones a futuro impulsadas por Sensei-IA.</p>
+                    </div>
+                    <div class="ai-insight-arrow">
+                        <i class="fa fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logo Flotante Inferior Izquierdo -->
+            <div class="gym-dashboard-logo-container">
+                <img src="/horarios_clan_jiu_jitsu/static/description/icon_transparent.png" alt="Clan Jiu Jitsu Logo" class="gym-dashboard-logo"/>
+            </div>
+
+            <!-- Logo Flotante Inferior Derecho -->
+            <div class="gym-dashboard-logo-container-right">
+                <img src="/horarios_clan_jiu_jitsu/static/description/logo_2.jpg" alt="Secondary Logo" class="gym-dashboard-logo shadow-logo rounded-circle"/>
+            </div>
+        </div>
+    </t>
+</templates>

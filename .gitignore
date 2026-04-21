@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+*.swp
+*.bak
+dump.rdb
+*.log
+/odoo.conf
+/soft.conf
+/venv/
+/odoo-server/

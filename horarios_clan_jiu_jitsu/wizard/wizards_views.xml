@@ -15,8 +15,8 @@
                             <field name="area"/>
                         </group>
                         <group>
-                            <field name="hora_inicio"/>
-                            <field name="hora_fin"/>
+                            <field name="hora_inicio_str" required="1"/>
+                            <field name="hora_fin_str" required="1"/>
                         </group>
                     </group>
                     <div class="alert alert-info" role="alert" invisible="is_valid">
@@ -46,15 +46,31 @@
         <field name="name">gym.horario.report.wizard.form</field>
         <field name="model">gym.horario.report.wizard</field>
         <field name="arch" type="xml">
-            <form string="Descargar Cartelera Semanal">
+            <form string="Descargar Cartelera Semanal" class="gym_pdf_wizard">
                 <sheet>
-                    <p class="text-muted">Selecciona el área para la cual deseas descargar el PDF de los horarios planificados.</p>
-                    <group>
-                        <field name="area" widget="radio"/>
-                    </group>
+                    <div class="gym_wizard_header_premium mb-4">
+                        <div class="gym_wizard_icon">
+                            <i class="fa fa-file-pdf-o"></i>
+                        </div>
+                        <div class="gym_wizard_titles">
+                            <h2 class="mt-0 mb-1">Exportar Cartelera de Horarios</h2>
+                            <p class="text-muted mb-0">Selecciona el área para generar el documento oficial del Dojo.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="gym_wizard_selection_container p-3 bg-light rounded text-center">
+                        <label for="area" class="fw-bold mb-3 d-block">Seleccionar Área de Entrenamiento</label>
+                        <div class="d-flex justify-content-center">
+                            <field name="area" widget="radio" options="{'horizontal': true}" class="gym_radio_cards"/>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4" role="alert">
+                        <i class="fa fa-info-circle mr-2"></i> El PDF incluirá todas las clases planificadas para la semana actual en el área seleccionada.
+                    </div>
                 </sheet>
                 <footer>
-                    <button name="action_print_report" type="object" string="Generar PDF" class="btn-primary"/>
+                    <button name="action_print_report" type="object" string="Generar PDF Oficial" class="btn-primary" icon="fa-download"/>
                     <button string="Cerrar" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>
@@ -69,5 +85,97 @@
     </record>
 
 
+    <!-- VISTA GENERADOR MASIVO DE HORARIOS WIZARD -->
+    <record id="view_gym_generador_horario_wizard_form" model="ir.ui.view">
+        <field name="name">gym.horario.generador.wizard.form</field>
+        <field name="model">gym.horario.generador.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asignación Múltiple de Horarios">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Asignación Múltiple</h1>
+                        <p class="text-muted">Añade varias clases en diferentes días para la semana en curso de forma rápida.</p>
+                    </div>
+                    <group>
+                        <group string="Detalles Base">
+                            <field name="instructor_id" readonly="1" options="{'no_open': True}"/>
+                            <field name="fecha_inicio" invisible="1"/>
+                            <field name="fecha_fin" invisible="1"/>
+                        </group>
+                        
+                        <group string="Detalles Base">
+                            <field name="instructor_id" readonly="1" options="{'no_open': True}"/>
+                            <field name="fecha_inicio" invisible="1"/>
+                            <field name="fecha_fin" invisible="1"/>
+                        </group>
+                        
+                        <!-- Layout usando sistema de cuadrícula nativo de Odoo (Grupos) evitará cualquier desorden o superposición -->
+                        <group string="Días, Horarios y Áreas" col="2">
+                            <!-- LUNES -->
+                            <group string="Lunes" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="lunes_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="lunes_hora_inicio_str" invisible="not lunes_activo" required="lunes_activo" string="Inicio"/>
+                                <field name="lunes_hora_fin_str" invisible="not lunes_activo" required="lunes_activo" string="Fin"/>
+                                <field name="lunes_area" invisible="not lunes_activo" required="lunes_activo" string="Ubicación"/>
+                            </group>
+                            <!-- MARTES -->
+                            <group string="Martes" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="martes_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="martes_hora_inicio_str" invisible="not martes_activo" required="martes_activo" string="Inicio"/>
+                                <field name="martes_hora_fin_str" invisible="not martes_activo" required="martes_activo" string="Fin"/>
+                                <field name="martes_area" invisible="not martes_activo" required="martes_activo" string="Ubicación"/>
+                            </group>
+                            <!-- MIERCOLES -->
+                            <group string="Miércoles" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="miercoles_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="miercoles_hora_inicio_str" invisible="not miercoles_activo" required="miercoles_activo" string="Inicio"/>
+                                <field name="miercoles_hora_fin_str" invisible="not miercoles_activo" required="miercoles_activo" string="Fin"/>
+                                <field name="miercoles_area" invisible="not miercoles_activo" required="miercoles_activo" string="Ubicación"/>
+                            </group>
+                            <!-- JUEVES -->
+                            <group string="Jueves" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="jueves_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="jueves_hora_inicio_str" invisible="not jueves_activo" required="jueves_activo" string="Inicio"/>
+                                <field name="jueves_hora_fin_str" invisible="not jueves_activo" required="jueves_activo" string="Fin"/>
+                                <field name="jueves_area" invisible="not jueves_activo" required="jueves_activo" string="Ubicación"/>
+                            </group>
+                            <!-- VIERNES -->
+                            <group string="Viernes" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="viernes_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="viernes_hora_inicio_str" invisible="not viernes_activo" required="viernes_activo" string="Inicio"/>
+                                <field name="viernes_hora_fin_str" invisible="not viernes_activo" required="viernes_activo" string="Fin"/>
+                                <field name="viernes_area" invisible="not viernes_activo" required="viernes_activo" string="Ubicación"/>
+                            </group>
+                            <!-- SABADO -->
+                            <group string="Sábado" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="sabado_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="sabado_hora_inicio_str" invisible="not sabado_activo" required="sabado_activo" string="Inicio"/>
+                                <field name="sabado_hora_fin_str" invisible="not sabado_activo" required="sabado_activo" string="Fin"/>
+                                <field name="sabado_area" invisible="not sabado_activo" required="sabado_activo" string="Ubicación"/>
+                            </group>
+                            <!-- DOMINGO -->
+                            <group string="Domingo" style="border: 1px solid #e1e4e8; border-radius: 8px; padding: 10px; background: #f8f9fa;">
+                                <field name="domingo_activo" widget="boolean_toggle" string="Asignar Clase"/>
+                                <field name="domingo_hora_inicio_str" invisible="not domingo_activo" required="domingo_activo" string="Inicio"/>
+                                <field name="domingo_hora_fin_str" invisible="not domingo_activo" required="domingo_activo" string="Fin"/>
+                                <field name="domingo_area" invisible="not domingo_activo" required="domingo_activo" string="Ubicación"/>
+                            </group>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generar_horarios" type="object" string="Crear y Guardar" class="btn-primary" icon="fa-check"/>
+                    <button string="Descartar" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gym_generador_horario_wizard" model="ir.actions.act_window">
+        <field name="name">Asignación Múltiple</field>
+        <field name="res_model">gym.horario.generador.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
 
 </odoo>

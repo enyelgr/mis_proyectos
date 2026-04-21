@@ -17,6 +17,12 @@
     background-size: auto 40px;
 }
 
+/* Forzar que el contenedor raíz de Odoo no tenga padding para que sea Pantalla Completa Real */
+.o_content:has(.o_calendar_view) {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
 .schedule_board .o_kanban_group .oe_kanban_global_click {
     position: absolute;
     left: 12px;
@@ -91,23 +97,56 @@
     z-index: 100;
 }
 
-/* Watermark Background strictly scoped to the Clan Jiu Jitsu module */
-.o_content.clan_jiujitsu_watermark_container::after,
-body:has(.clan_jiujitsu_watermark) .o_content::after {
-    content: "";
-    position: fixed;
-    top: 0; 
-    left: 0;
-    transform: none;
-    width: 100%;
-    height: 100%;
-    background-color: #000000;
-    background-image: url('/horarios_clan_jiu_jitsu/static/src/img/logo_clan.png');
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 50%;
-    opacity: 0.04; 
-    pointer-events: none;
-    z-index: 99999;
-    display: block !important;
+/* MARCA DE AGUA ELIMINADA PERMANENTEMENTE POR PETICIÓN DEL USUARIO */
+
+/* ----------------------------------------------------
+   ESTILOS PARA EL WIZARD DE PDF (PREMIUM EXPORT)
+   ---------------------------------------------------- */
+
+.gym_pdf_wizard .gym_wizard_header_premium {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f1f2f6;
+}
+
+.gym_pdf_wizard .gym_wizard_icon {
+    width: 60px;
+    height: 60px;
+    background: #e63946;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+}
+
+.gym_pdf_wizard .gym_wizard_titles h2 {
+    color: #2b2b2b;
+    font-weight: 800 !important;
+}
+
+.gym_pdf_wizard .gym_wizard_selection_container {
+    border: 2px dashed #d1d8e0;
+    transition: all 0.3s ease;
+}
+
+.gym_pdf_wizard .gym_wizard_selection_container:hover {
+    border-color: #e63946;
+    background-color: #fff !important;
+}
+
+.gym_pdf_wizard .gym_radio_cards .o_radio_item {
+    margin: 0 10px !important;
+}
+
+.gym_pdf_wizard .btn-primary {
+    background-color: #e63946 !important;
+    border-color: #e63946 !important;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 10px;
 }

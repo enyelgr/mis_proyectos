@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_gym" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.gym</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="30"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Clan Jiu Jitsu" string="Clan Jiu Jitsu" name="horarios_clan_jiu_jitsu">
+                    <block title="Configuración de Inteligencia Artificial" name="ai_config">
+                        <setting title="IA Sensei" help="Configura la conexión con el cerebro de la IA.">
+                            <div class="content-group">
+                                <div class="mt16">
+                                    <label for="gym_ai_api_key"/>
+                                    <field name="gym_ai_api_key" password="True"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_gym_config_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes Especiales Dojo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'horarios_clan_jiu_jitsu'}</field>
+    </record>
+
+    <menuitem id="menu_gym_config" name="Ajustes" parent="menu_gym_root" action="action_gym_config_settings" sequence="100"/>
+</odoo>

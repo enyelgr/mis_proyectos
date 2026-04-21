@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="horarios_clan_jiu_jitsu.AISensei" owl="1">
+        <div class="ai-sensei-wrapper">
+            <!-- Header Futurista -->
+            <div class="ai-sensei-header">
+                <div class="ai-status-pulse"></div>
+                <h1>DOJO VISION <span class="ai-highlight">AI</span></h1>
+                <p>Sensei Virtual interactivo. ¿En qué puede ayudarte el Dojo hoy?</p>
+                <button class="ai-back-btn" t-on-click="onBack">
+                    <i class="fa fa-arrow-left"></i> Volver al Tablero
+                </button>
+            </div>
+
+            <!-- TERMINAL DE CHAT SENSEI -->
+            <div class="ai-chat-wrapper">
+                <div class="ai-chat-messages" t-ref="chatMessages">
+                    <t t-foreach="state.messages" t-as="msg" t-key="msg.id">
+                        <div t-attf-class="ai-message-bubble #{msg.role === 'user' ? 'msg-user' : 'msg-sensei'}">
+                            <div class="msg-avatar" t-if="msg.role === 'sensei'">
+                                <i class="fa fa-braille"></i>
+                            </div>
+                            <div class="msg-content">
+                                <t t-esc="msg.content"/>
+                            </div>
+                        </div>
+                    </t>
+                    
+                    <!-- Indicador de pensando -->
+                    <div class="ai-message-bubble msg-sensei" t-if="state.isTyping">
+                        <div class="msg-avatar">
+                            <i class="fa fa-braille"></i>
+                        </div>
+                        <div class="msg-content typing-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entradas del Chat -->
+                <div class="ai-chat-input-container">
+                    <input type="text" 
+                           class="ai-chat-input" 
+                           placeholder="Pregúntale lo que quieras al Sensei..." 
+                           t-model="state.inputContent"
+                           t-on-keydown="onInputKeydown"/>
+                    <button class="ai-chat-send-btn" t-on-click="sendMessage">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sugerencias de Inicio -->
+            <div class="ai-quick-prompts" t-if="state.messages.length &lt;= 1">
+                <button t-on-click="() => this.sendPrompt('¿Cómo puedo mejorar la retención de alumnos?')">🎯 Retención</button>
+                <button t-on-click="() => this.sendPrompt('Dame una idea de marketing para Instagram')">📸 Marketing</button>
+                <button t-on-click="() => this.sendPrompt('¿Qué disciplina debería añadir al dojo?')">🥋 Disciplinas</button>
+            </div>
+
+            <!-- Footer con Frase de Bushido -->
+            <div class="ai-sensei-footer">
+                <p class="bushido-quote">"El guerrero que se prepara para el futuro, ya ha ganado la mitad de la batalla."</p>
+            </div>
+
+            <!-- Footer con Frase de Bushido -->
+            <div class="ai-sensei-footer">
+                <p class="bushido-quote">"El guerrero que se prepara para el futuro, ya ha ganado la mitad de la batalla."</p>
+            </div>
+        </div>
+    </t>
+</templates>

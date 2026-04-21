@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="paperformat_horario_compacto" model="report.paperformat">
+        <field name="name">Papel Horario Clan (Sin Márgenes)</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">2</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
     <record id="action_report_horario_semanal" model="ir.actions.report">
         <field name="name">Cartelera Semanal por Área</field>
         <field name="model">gym.horario.report.wizard</field>
@@ -9,83 +23,195 @@
         <field name="print_report_name">'Horario_Cartelera_Area_' + object.area</field>
         <field name="binding_model_id" ref="model_gym_horario_report_wizard"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_horario_compacto"/>
     </record>
 
     <template id="report_horario_semanal_template">
         <t t-call="web.html_container">
-            <t t-call="web.external_layout">
+            <t t-call="web.basic_layout"> <!-- Usamos basic_layout para ganar espacio máximo -->
                 <style>
+                    /* 
+                       AJUSTES DE IMPRESIÓN PARA UNA SOLA PÁGINA 
+                    */
+                    @page {
+                        margin: 0.5cm;
+                    }
+                    
+                    body {
+                        font-family: 'Helvetica', 'Arial', sans-serif;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    /* Banner Superior Centrado y Potente */
+                    .gym_report_header {
+                        background-color: #000000;
+                        padding: 15px 0;
+                        text-align: center;
+                        margin: 0 auto 10px auto;
+                        border-bottom: 4px solid #e63946;
+                        width: 50%;
+                        border-radius: 0 0 15px 15px;
+                    }
+
+                    .gym_report_header img {
+                        height: 150px; /* Logo aún más grande */
+                        width: auto;
+                    }
+
+                    .gym_report_title {
+                        text-align: center;
+                        text-transform: uppercase;
+                        font-weight: 900;
+                        color: #1a1a1a;
+                        margin: 10px 0 5px 0;
+                        font-size: 1.4rem;
+                    }
+
+                    .gym_report_title span {
+                        color: #e63946;
+                    }
+
+                    .instagram_handle {
+                        text-align: center;
+                        color: #e63946;
+                        font-weight: 800;
+                        font-size: 1.1rem;
+                        margin-bottom: 8px;
+                        display: block;
+                    }
+
+                    /* Tabla Optimizada para Una Sola Página Real */
                     .table-cartelera {
                         width: 100%;
                         border-collapse: collapse;
-                        font-size: 12px;
+                        font-size: 10px;
+                        border: 1px solid #dee2e6;
                     }
-                    .table-cartelera th, .table-cartelera td {
-                        border: 1px solid #ccc;
-                        padding: 8px;
+
+                    .table-cartelera th {
+                        background-color: #1a1a1a;
+                        color: #ffffff;
+                        text-transform: uppercase;
+                        font-weight: 800;
+                        padding: 6px 2px;
+                        border: 1px solid #000;
+                        font-size: 10px;
+                    }
+
+                    .table-cartelera td {
+                        border: 0.5px solid #dee2e6;
+                        padding: 1.5px 2px;
+                        text-align: center;
+                        height: 22px;
+                    }
+
+                    .hour-col {
+                        background-color: #f9fafb;
+                        font-weight: 800;
+                        width: 18%; /* Más ancho para el rango de horas */
+                        color: #1a1a1a;
+                        border-right: 2px solid #dee2e6 !important;
+                        font-size: 8.5px;
+                        padding: 0 4px !important;
+                    }
+
+                    /* Bloque de Clase Premium / "Dojo Badge" */
+                    .class-td {
+                        padding: 2px !important;
+                        vertical-align: middle;
+                    }
+
+                    .class-block {
+                        background-color: rgba(230, 57, 70, 0.05);
+                        border: 1.5px solid #e63946;
+                        border-radius: 4px;
+                        padding: 4px 2px;
+                        height: 100%;
+                    }
+
+                    .class-instructor {
+                        font-weight: 900;
+                        color: #000000;
+                        font-size: 10px; /* Nombre más grande */
+                        margin-bottom: 1px;
+                        line-height: 1.1;
+                    }
+
+                    .class-discipline {
+                        font-weight: 800;
+                        color: #ffffff;
+                        font-size: 8px;
+                        text-transform: uppercase;
+                        background: #e63946;
+                        padding: 1px 6px;
+                        border-radius: 8px;
+                        display: inline-block;
+                    }
+
+                    .class-hours {
+                        color: #333;
+                        font-size: 7.5px;
+                        font-weight: 700;
+                        margin-top: 2px;
+                    }
+
+                    /* Footer integrado */
+                    .gym_report_footer {
+                        margin-top: 10px;
+                        font-size: 8px;
+                        color: #777;
                         text-align: center;
                     }
-                    .table-cartelera th {
-                        background-color: #2c3e50;
-                        color: white;
-                    }
-                    .hour-col {
-                        background-color: #f8f9fa;
-                        font-weight: bold;
-                        width: 10%;
-                    }
-                    .class-block {
-                        background-color: #e2f0d9;
-                        border-radius: 4px;
-                        padding: 4px;
-                        font-weight: bold;
-                        color: #2e7d32;
-                    }
+
                 </style>
+
                 <div class="page">
-                    <div class="text-center" style="background-color: #000000; padding: 10px 0; margin-bottom: 25px; border-radius: 5px; width: 100%;">
-                        <img src="/horarios_clan_jiu_jitsu/static/src/img/logo_clan.png" style="height: 280px; width: auto;"/>
+                    <div class="gym_report_header">
+                        <img src="/horarios_clan_jiu_jitsu/static/src/img/logo_clan.png"/>
                     </div>
-                    <h2 class="text-center mb-4">Cartelera de Horarios: <t t-esc="area_name"/></h2>
+
+                    <h2 class="gym_report_title">Cartelera Semanal: <span><t t-esc="area_name"/></span></h2>
+                    
+                    <div class="instagram_handle">
+                        <i class="fa fa-instagram"/> @clan_jiujitsu
+                    </div>
+
                     <table class="table-cartelera">
                         <thead>
                             <tr>
-                                <th>Hora</th>
-                                <th>Lunes</th>
-                                <th>Martes</th>
-                                <th>Miércoles</th>
-                                <th>Jueves</th>
-                                <th>Viernes</th>
-                                <th>Sábado</th>
-                                <th>Domingo</th>
+                                <th style="width: 12%;">HORA</th>
+                                <t t-foreach="days" t-as="day">
+                                    <th><t t-esc="day"/></th>
+                                </t>
                             </tr>
                         </thead>
                         <tbody>
-                            <t t-foreach="hours_range" t-as="hour">
+                            <t t-foreach="matrix" t-as="row">
                                 <tr>
-                                    <td class="hour-col"><t t-esc="hour"/>:00</td>
-                                    <t t-foreach="['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']" t-as="day">
-                                        <td>
-                                            <!-- Check if there is a class for this day and hour -->
-                                            <t t-set="class_found" t-value="False"/>
-                                            <t t-foreach="horarios" t-as="h">
-                                                <t t-if="h.dia_semana == day and h.hora_inicio &lt;= hour and h.hora_fin &gt; hour">
-                                                    <div class="class-block">
-                                                        <t t-esc="h.instructor_id.name"/><br/>
-                                                        <small><t t-esc="'%02d:00 - %02d:00' % (int(h.hora_inicio), int(h.hora_fin))"/></small>
-                                                    </div>
-                                                    <t t-set="class_found" t-value="True"/>
-                                                </t>
-                                            </t>
-                                            <t t-if="not class_found">
-                                                <span class="text-muted">-</span>
-                                            </t>
-                                        </td>
+                                    <td class="hour-col"><t t-esc="row['time_label']"/></td>
+                                    <t t-foreach="row['cells']" t-as="cell">
+                                        <t t-if="cell['type'] == 'empty'">
+                                            <td><span style="color: #eee;">-</span></td>
+                                        </t>
+                                        <t t-if="cell['type'] == 'class'">
+                                            <td t-att-rowspan="cell['rowspan']" class="class-td">
+                                                <div class="class-block">
+                                                    <div class="class-instructor"><t t-esc="cell['instructor']"/></div>
+                                                    <div class="class-discipline"><t t-esc="cell['discipline']"/></div>
+                                                    <div class="class-hours"><t t-esc="cell['time_range_str']"/></div>
+                                                </div>
+                                            </td>
+                                        </t>
                                     </t>
                                 </tr>
                             </t>
                         </tbody>
                     </table>
+
+                    <div class="gym_report_footer">
+                        <p><strong>CLAN JIU JITSU DOJO</strong> • Síguenos en Instagram: <strong>@clan_jiujitsu</strong> • Sistema de Gestión de Horarios Premium</p>
+                    </div>
                 </div>
             </t>
         </t>

@@ -9,6 +9,10 @@ class GymHorarioChangeWizard(models.TransientModel):
     fecha = fields.Date(string='Nueva Fecha', required=True)
     hora_inicio = fields.Float(string='Nueva Hora Inicio (0-24)', required=True)
     hora_fin = fields.Float(string='Nueva Hora Fin (0-24)', required=True)
+    
+    hora_inicio_str = fields.Selection(lambda self: self.env['gym.horario']._fields['hora_inicio_str'].selection, string="Hora Inicio (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
+    hora_fin_str = fields.Selection(lambda self: self.env['gym.horario']._fields['hora_fin_str'].selection, string="Hora Fin (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
+
     area = fields.Selection([
         ('1', 'Área 1'),
         ('2', 'Área 2'),
@@ -18,6 +22,19 @@ class GymHorarioChangeWizard(models.TransientModel):
     
     status_message = fields.Text(string='Estado', readonly=True)
     is_valid = fields.Boolean(default=False)
+
+    @api.depends('hora_inicio', 'hora_fin')
+    def _compute_horas_str(self):
+        for rec in self:
+            rec.hora_inicio_str = str(rec.hora_inicio) if rec.hora_inicio else False
+            rec.hora_fin_str = str(rec.hora_fin) if rec.hora_fin else False
+
+    def _inverse_horas_str(self):
+        for rec in self:
+            if rec.hora_inicio_str:
+                rec.hora_inicio = float(rec.hora_inicio_str)
+            if rec.hora_fin_str:
+                rec.hora_fin = float(rec.hora_fin_str)
 
     @api.onchange('fecha', 'hora_inicio', 'hora_fin', 'area')
     def _check_disponibilidad(self):

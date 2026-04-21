@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="horarios_clan_jiu_jitsu.CalendarCommonPopover.body" t-inherit="web.CalendarCommonPopover.body" t-inherit-mode="extension">
+        <xpath expr="//ul[1]" position="before">
+            <t t-if="props.model.resModel == 'gym.horario'">
+                <div class="clan_popover_profile_header">
+                    <div class="clan_popover_avatar_wrapper">
+                        <t t-if="props.record.rawRecord.instructor_id">
+                            <img t-attf-src="/web/image/gym.instructor/{{props.record.rawRecord.instructor_id[0]}}/image" class="clan_popover_avatar_img"/>
+                        </t>
+                        <t t-else="">
+                            <div class="clan_popover_avatar_placeholder">
+                                <i class="fa fa-user"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

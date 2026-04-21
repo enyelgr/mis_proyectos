@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="horarios_clan_jiu_jitsu.CalendarEvent">
+        <div class="clan_calendar_event_card">
+            <!-- Avatar del Instructor -->
+            <div class="clan_calendar_avatar_container">
+                <t t-if="rawRecord.instructor_id">
+                    <img t-attf-src="/web/image/gym.instructor/{{rawRecord.instructor_id[0]}}/image_128" class="clan_calendar_avatar_img"/>
+                </t>
+                <t t-else="">
+                    <div class="clan_calendar_avatar_placeholder">
+                        <i class="fa fa-user"/>
+                    </div>
+                </t>
+            </div>
+            
+            <!-- Información Minimalista: Nombre + Disciplina Tag -->
+            <div class="clan_calendar_info">
+                <div class="clan_calendar_instructor_name">
+                    <t t-if="rawRecord.instructor_id">
+                        <t t-esc="rawRecord.instructor_id[1]"/>
+                    </t>
+                    <t t-else="">
+                        Libre
+                    </t>
+                </div>
+                
+                <div class="clan_calendar_badges_container" t-if="rawRecord.instructor_id">
+                    <span class="clan_calendar_pill clan_calendar_pill_discipline">
+                        <t t-esc="rawRecord.instructor_especialidad"/>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

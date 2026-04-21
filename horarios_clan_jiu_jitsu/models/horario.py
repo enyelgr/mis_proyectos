@@ -4,13 +4,32 @@ import pytz
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
+TIME_SLOTS = [
+    ('6.0', '06:00 AM'), ('6.5', '06:30 AM'),
+    ('7.0', '07:00 AM'), ('7.5', '07:30 AM'),
+    ('8.0', '08:00 AM'), ('8.5', '08:30 AM'),
+    ('9.0', '09:00 AM'), ('9.5', '09:30 AM'),
+    ('10.0', '10:00 AM'), ('10.5', '10:30 AM'),
+    ('11.0', '11:00 AM'), ('11.5', '11:30 AM'),
+    ('12.0', '12:00 PM'), ('12.5', '12:30 PM'),
+    ('13.0', '01:00 PM'), ('13.5', '01:30 PM'),
+    ('14.0', '02:00 PM'), ('14.5', '02:30 PM'),
+    ('15.0', '03:00 PM'), ('15.5', '03:30 PM'),
+    ('16.0', '04:00 PM'), ('16.5', '04:30 PM'),
+    ('17.0', '05:00 PM'), ('17.5', '05:30 PM'),
+    ('18.0', '06:00 PM'), ('18.5', '06:30 PM'),
+    ('19.0', '07:00 PM'), ('19.5', '07:30 PM'),
+    ('20.0', '08:00 PM'), ('20.5', '08:30 PM'),
+    ('21.0', '09:00 PM')
+]
+
 
 class GymHorario(models.Model):
     _name = 'gym.horario'
     _description = 'Bloque de Horario de Clase'
     _order = 'fecha asc, hora_inicio asc, area asc'
 
-    name = fields.Char(string='Referencia', compute='_compute_name', store=True)
+    name = fields.Char(string='Referencia', compute='_compute_name', store=False)
     fecha = fields.Date(string='Fecha', required=True, default=fields.Date.today)
     fecha_hora_inicio = fields.Datetime(string='Fecha/Hora Inicio', compute='_compute_datetime', inverse='_inverse_datetime', store=True)
     fecha_hora_fin = fields.Datetime(string='Fecha/Hora Fin', compute='_compute_datetime', inverse='_inverse_datetime', store=True)
@@ -23,16 +42,12 @@ class GymHorario(models.Model):
         ('sabado', 'Sábado'),
         ('domingo', 'Domingo'),
     ], string='Día de la Semana', compute='_compute_dia_semana', inverse='_inverse_dia_semana', store=True, group_expand='_read_group_dia_semana')
-    hora_inicio = fields.Float(string='Hora Inicio', compute='_compute_hora_inicio', inverse='_inverse_hora_inicio', store=True)
-    hora_inicio_hora = fields.Integer(string='Hora (1-12)', default=9)
-    hora_inicio_ampm = fields.Selection([('AM', 'AM'), ('PM', 'PM')], string='AM/PM', default='AM')
-    hora_fin = fields.Float(string='Hora Fin', compute='_compute_hora_fin', inverse='_inverse_hora_fin', store=True)
-    hora_fin_hora = fields.Integer(string='Hora (1-12)', default=10)
-    hora_fin_ampm = fields.Selection([('AM', 'AM'), ('PM', 'PM')], string='AM/PM', default='AM')
+    hora_inicio = fields.Float(string='Hora Inicio', required=True, default=9.0)
+    hora_fin = fields.Float(string='Hora Fin', required=True, default=10.0)
+    hora_inicio_str = fields.Selection(TIME_SLOTS, string="Hora Inicio (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
+    hora_fin_str = fields.Selection(TIME_SLOTS, string="Hora Fin (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
     top_position = fields.Float(string='Posición vertical', compute='_compute_schedule_layout', store=True)
     block_height = fields.Float(string='Altura del bloque', compute='_compute_schedule_layout', store=True)
-    hora_inicio_12h = fields.Char(string='Hora Inicio (12h)', compute='_compute_horas_12h')
-    hora_fin_12h = fields.Char(string='Hora Fin (12h)', compute='_compute_horas_12h')
     duration = fields.Float(string='Duración (hrs)', compute='_compute_duration', store=True)
     area = fields.Selection([
         ('1', 'Área 1'),
@@ -41,6 +56,7 @@ class GymHorario(models.Model):
         ('4', 'Área 4'),
     ], string='Área', required=True, default='1')
     instructor_id = fields.Many2one('gym.instructor', string='Instructor', required=True)
+    instructor_especialidad = fields.Char(string='Especialidad', related='instructor_id.especialidad', store=True)
     state = fields.Selection([
         ('programado', 'Programado'),
         ('cancelado', 'Cancelado / Ausencia'),
@@ -94,13 +110,6 @@ class GymHorario(models.Model):
             if record.hora_fin <= record.hora_inicio:
                 raise ValidationError('La hora de fin debe ser mayor que la hora de inicio.')
 
-    @api.constrains('hora_inicio_hora', 'hora_fin_hora')
-    def _check_hora_range(self):
-        for record in self:
-            if record.hora_inicio_hora and (record.hora_inicio_hora < 1 or record.hora_inicio_hora > 12):
-                raise ValidationError('La hora de inicio debe estar entre 1 y 12.')
-            if record.hora_fin_hora and (record.hora_fin_hora < 1 or record.hora_fin_hora > 12):
-                raise ValidationError('La hora de fin debe estar entre 1 y 12.')
 
     @api.constrains('area', 'fecha', 'hora_inicio', 'hora_fin', 'state')
     def _check_overlap(self):
@@ -118,6 +127,27 @@ class GymHorario(models.Model):
             if self.search(domain):
                 area_name = dict(self._fields['area'].selection).get(record.area)
                 raise ValidationError('¡Conflicto de Horario! Ya existe una clase en %s el %s a esa hora.' % (area_name, record.fecha))
+
+    @api.depends('hora_inicio', 'hora_fin')
+    def _compute_horas_str(self):
+        for rec in self:
+            rec.hora_inicio_str = str(rec.hora_inicio) if rec.hora_inicio else False
+            rec.hora_fin_str = str(rec.hora_fin) if rec.hora_fin else False
+
+    def _inverse_horas_str(self):
+        for rec in self:
+            if rec.hora_inicio_str:
+                rec.hora_inicio = float(rec.hora_inicio_str)
+            if rec.hora_fin_str:
+                rec.hora_fin = float(rec.hora_fin_str)
+
+    @api.onchange('hora_inicio_str')
+    def _onchange_hora_inicio_str(self):
+        if self.hora_inicio_str:
+            val = float(self.hora_inicio_str)
+            new_val = val + 1.0 # Default rule: 1 hour class
+            if new_val <= 21.0:
+                self.hora_fin_str = str(new_val)
 
     @api.depends('fecha')
     def _compute_dia_semana(self):
@@ -161,22 +191,14 @@ class GymHorario(models.Model):
             'viernes', 'sabado', 'domingo'
         ]
 
-    @api.depends('fecha', 'hora_inicio', 'area', 'instructor_id')
+    @api.depends('instructor_id', 'instructor_especialidad')
     def _compute_name(self):
         for rec in self:
-            if rec.fecha and rec.area and rec.hora_inicio is not None:
-                h_start = int(rec.hora_inicio)
-                m_start = int((rec.hora_inicio - h_start) * 60)
-                area_name = dict(self._fields['area'].selection).get(rec.area)
-                rec.name = '%s %02d:%02d - %s (%s)' % (
-                    rec.fecha,
-                    h_start,
-                    m_start,
-                    area_name,
-                    rec.instructor_id.name if rec.instructor_id else 'Sin instructor',
-                )
+            if rec.instructor_id:
+                disc = rec.instructor_especialidad or 'Libre'
+                rec.name = f"{rec.instructor_id.name} | {disc}"
             else:
-                rec.name = 'Nuevo Bloque'
+                rec.name = 'Horario Disponible'
 
     @api.depends('hora_inicio', 'hora_fin')
     def _compute_duration(self):
@@ -201,65 +223,6 @@ class GymHorario(models.Model):
                 rec.top_position = 0.0
                 rec.block_height = 0.0
 
-    @api.depends('hora_inicio_hora', 'hora_inicio_ampm')
-    def _compute_hora_inicio(self):
-        for rec in self:
-            if rec.hora_inicio_hora and rec.hora_inicio_ampm:
-                hora_24 = rec.hora_inicio_hora
-                if rec.hora_inicio_ampm == 'PM' and hora_24 != 12:
-                    hora_24 += 12
-                elif rec.hora_inicio_ampm == 'AM' and hora_24 == 12:
-                    hora_24 = 0
-                rec.hora_inicio = hora_24
-            else:
-                rec.hora_inicio = 0.0
-
-    def _inverse_hora_inicio(self):
-        for rec in self:
-            if rec.hora_inicio is not None:
-                hora_24 = int(rec.hora_inicio)
-                if hora_24 == 0:
-                    rec.hora_inicio_hora = 12
-                    rec.hora_inicio_ampm = 'AM'
-                elif hora_24 < 12:
-                    rec.hora_inicio_hora = hora_24
-                    rec.hora_inicio_ampm = 'AM'
-                elif hora_24 == 12:
-                    rec.hora_inicio_hora = 12
-                    rec.hora_inicio_ampm = 'PM'
-                else:
-                    rec.hora_inicio_hora = hora_24 - 12
-                    rec.hora_inicio_ampm = 'PM'
-
-    @api.depends('hora_fin_hora', 'hora_fin_ampm')
-    def _compute_hora_fin(self):
-        for rec in self:
-            if rec.hora_fin_hora and rec.hora_fin_ampm:
-                hora_24 = rec.hora_fin_hora
-                if rec.hora_fin_ampm == 'PM' and hora_24 != 12:
-                    hora_24 += 12
-                elif rec.hora_fin_ampm == 'AM' and hora_24 == 12:
-                    hora_24 = 0
-                rec.hora_fin = hora_24
-            else:
-                rec.hora_fin = 0.0
-
-    def _inverse_hora_fin(self):
-        for rec in self:
-            if rec.hora_fin is not None:
-                hora_24 = int(rec.hora_fin)
-                if hora_24 == 0:
-                    rec.hora_fin_hora = 12
-                    rec.hora_fin_ampm = 'AM'
-                elif hora_24 < 12:
-                    rec.hora_fin_hora = hora_24
-                    rec.hora_fin_ampm = 'AM'
-                elif hora_24 == 12:
-                    rec.hora_fin_hora = 12
-                    rec.hora_fin_ampm = 'PM'
-                else:
-                    rec.hora_fin_hora = hora_24 - 12
-                    rec.hora_fin_ampm = 'PM'
 
     def action_marcar_ausencia(self):
         self.write({'state': 'cancelado'})

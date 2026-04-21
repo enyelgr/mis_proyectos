@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Pre-configuración automática de la API para ahorrar tiempo al usuario -->
+        <function model="ir.config_parameter" name="set_param" eval="('horarios_clan_jiu_jitsu.gym_ai_api_key', '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')"/>
+    </data>
+</odoo>
