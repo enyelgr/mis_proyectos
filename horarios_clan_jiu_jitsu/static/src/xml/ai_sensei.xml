@@ -12,8 +12,51 @@
                 </button>
             </div>
 
+            <!-- BOTONES DE ACCIÓN: SENSEI LIVE Y VOICE -->
+            <div class="ai-live-control">
+                <!-- Modo Video -->
+                <button t-attf-class="ai-live-btn #{state.isLive ? 'active' : ''}" t-on-click="toggleLiveMode">
+                    <i t-attf-class="fa #{state.isLive ? 'fa-video-camera' : 'fa-play-circle'}"></i>
+                    <t t-if="!state.isLive"> SENSEI LIVE (CÁMARA)</t>
+                    <t t-else=""> FINALIZAR VIDEO</t>
+                </button>
+
+                <!-- Modo Solo Audio -->
+                <button t-attf-class="ai-voice-only-btn #{state.isVoiceOnly ? 'active' : ''}" t-on-click="toggleVoiceOnlyMode">
+                    <i t-attf-class="fa #{state.isVoiceOnly ? 'fa-phone' : 'fa-microphone'}"></i>
+                    <t t-if="!state.isVoiceOnly"> CHAT DE VOZ</t>
+                    <t t-else=""> FINALIZAR VOZ</t>
+                </button>
+            </div>
+
+            <!-- CONTENEDOR DE PRODUCTO: SENSEI LIVE / VOICE (SOLO CUANDO ESTÁ ACTIVO) -->
+            <div class="sensei-live-overlay" t-if="state.isLive || state.isVoiceOnly">
+                <div class="sensei-camera-circle" t-if="state.isLive">
+                    <video t-ref="webcamVideo" autoplay="true" playsinline="true"></video>
+                    <canvas t-ref="snapshotCanvas" style="display: none;"></canvas>
+                    <div class="camera-neon-ring"></div>
+                </div>
+
+                <!-- Avatar Alternativo para Solo Voz -->
+                <div class="sensei-voice-avatar" t-else="">
+                    <i class="fa fa-braille"></i>
+                    <div class="voice-neon-glow"></div>
+                </div>
+                
+                <div class="sensei-voice-interaction">
+                    <div t-attf-class="voice-waves #{state.isListening ? 'active' : ''}">
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <p class="live-status-text">
+                        <t t-if="state.isListening">Sensei te está escuchando...</t>
+                        <t t-elif="state.isTyping">Sensei está analizando...</t>
+                        <t t-else="">Háblale al Sensei...</t>
+                    </p>
+                </div>
+            </div>
+
             <!-- TERMINAL DE CHAT SENSEI -->
-            <div class="ai-chat-wrapper">
+            <div t-attf-class="ai-chat-wrapper #{state.isLive || state.isVoiceOnly ? 'chat-minimized' : ''}">
                 <div class="ai-chat-messages" t-ref="chatMessages">
                     <t t-foreach="state.messages" t-as="msg" t-key="msg.id">
                         <div t-attf-class="ai-message-bubble #{msg.role === 'user' ? 'msg-user' : 'msg-sensei'}">
@@ -21,7 +64,12 @@
                                 <i class="fa fa-braille"></i>
                             </div>
                             <div class="msg-content">
-                                <t t-esc="msg.content"/>
+                                <t t-if="msg.isImage">
+                                    <img t-att-src="msg.content" class="msg-img-preview"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="msg.content"/>
+                                </t>
                             </div>
                         </div>
                     </t>
@@ -39,27 +87,40 @@
 
                 <!-- Entradas del Chat -->
                 <div class="ai-chat-input-container">
+                    <!-- Botón de Voz Opcional (Altavoz) -->
+                    <button t-attf-class="ai-speak-toggle #{state.autoSpeak ? 'active' : ''}" 
+                            t-on-click="toggleAutoSpeak" 
+                            title="Respuesta por voz opcional">
+                        <i t-attf-class="fa #{state.autoSpeak ? 'fa-volume-up' : 'fa-volume-off'}"></i>
+                    </button>
+
+                    <!-- Botón de Adjuntar Imagen -->
+                    <label class="ai-attachment-btn">
+                        <i class="fa fa-paperclip"></i>
+                        <input type="file" accept="image/*,video/*" t-on-change="onFileChange" style="display: none;"/>
+                    </label>
+
                     <input type="text" 
                            class="ai-chat-input" 
                            placeholder="Pregúntale lo que quieras al Sensei..." 
                            t-model="state.inputContent"
                            t-on-keydown="onInputKeydown"/>
+                    
+                    <button t-attf-class="ai-mic-btn #{state.isListening ? 'active' : ''}" t-on-click="toggleVoiceInput">
+                        <i class="fa fa-microphone"></i>
+                    </button>
+
                     <button class="ai-chat-send-btn" t-on-click="sendMessage">
                         <i class="fa fa-paper-plane"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Sugerencias de Inicio -->
-            <div class="ai-quick-prompts" t-if="state.messages.length &lt;= 1">
+            <!-- Sugerencias de Inicio (Solo fuera de Live) -->
+            <div class="ai-quick-prompts" t-if="!state.isLive &amp;&amp; state.messages.length &lt;= 1">
                 <button t-on-click="() => this.sendPrompt('¿Cómo puedo mejorar la retención de alumnos?')">🎯 Retención</button>
                 <button t-on-click="() => this.sendPrompt('Dame una idea de marketing para Instagram')">📸 Marketing</button>
                 <button t-on-click="() => this.sendPrompt('¿Qué disciplina debería añadir al dojo?')">🥋 Disciplinas</button>
-            </div>
-
-            <!-- Footer con Frase de Bushido -->
-            <div class="ai-sensei-footer">
-                <p class="bushido-quote">"El guerrero que se prepara para el futuro, ya ha ganado la mitad de la batalla."</p>
             </div>
 
             <!-- Footer con Frase de Bushido -->
