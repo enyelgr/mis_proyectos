@@ -23,7 +23,9 @@ export class AISensei extends Component {
             isVoiceOnly: false,
             isListening: false,
             autoSpeak: false,
-            pendingMedia: null
+            isGeneratingImage: false,
+            pendingMedia: null,
+            activeLightbox: null
         });
 
         // Configuración de Reconocimiento de Voz
@@ -36,13 +38,33 @@ export class AISensei extends Component {
 
             this.recognition.onresult = (event) => {
                 const text = event.results[0][0].transcript;
+                console.log("Sensei escuchó:", text);
+                
+                // Filtro anti-alucinaciones: ignorar ruidos muy cortos (< 3 letras)
+                if (text.trim().length < 3) {
+                    console.log("Ruido ignorado...");
+                    return;
+                }
+                
                 this.state.inputContent = text;
-                this.state.isListening = false;
                 this.sendMessage();
             };
 
-            this.recognition.onerror = () => {
+            this.recognition.onend = () => {
                 this.state.isListening = false;
+                // Si seguimos en un modo interactivo, reiniciamos la escucha automáticamente
+                if (this.state.isLive || this.state.isVoiceOnly) {
+                    this._startListening();
+                }
+            };
+
+            this.recognition.onerror = (ev) => {
+                console.log("Error de reconocimiento:", ev.error);
+                this.state.isListening = false;
+                // Si no es un error de permiso, intentamos recuperar la escucha en 1 segundo
+                if (ev.error !== 'not-allowed' && (this.state.isLive || this.state.isVoiceOnly)) {
+                    setTimeout(() => this._startListening(), 1000);
+                }
             };
         }
 
@@ -170,11 +192,18 @@ export class AISensei extends Component {
         if (!this.webcamVideoRef.el || !this.snapshotCanvasRef.el) return null;
         const video = this.webcamVideoRef.el;
         const canvas = this.snapshotCanvasRef.el;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        
+        // Optimización: Forzamos una resolución pequeña (640x480) para la IA
+        // Esto evita errores de 'Connection Aborted' por enviar imágenes demasiado pesadas
+        canvas.width = 640;
+        canvas.height = 480;
+        
         const context = canvas.getContext('2d');
+        // Dibujamos el video redimensionado al canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        return canvas.toDataURL('image/jpeg', 0.7);
+        
+        // Calidad 0.6 para equilibrar visión y peso de red
+        return canvas.toDataURL('image/jpeg', 0.6);
     }
 
     // --- MANEJO DE ARCHIVOS ---
@@ -184,37 +213,75 @@ export class AISensei extends Component {
         const reader = new FileReader();
         reader.onload = (e) => {
             this.state.pendingMedia = e.target.result;
-            this.sendMessage();
+            // Limpiamos el input file para permitir seleccionar el mismo archivo después si se borra
+            ev.target.value = '';
         };
         reader.readAsDataURL(file);
     }
 
+    // --- GALERÍA Y VISOR ---
+    openLightbox(url) {
+        this.state.activeLightbox = url;
+    }
+
+    closeLightbox() {
+        this.state.activeLightbox = null;
+    }
+
+    downloadImage(url) {
+        const link = document.createElement('a');
+        link.href = url;
+        // Nombre de archivo con timestamp
+        link.download = `dojo_art_${Date.now()}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    removeAttachment() {
+        this.state.pendingMedia = null;
+    }
+
+    // --- GENERACIÓN DE IMÁGENES (DOJO ARTIST) ---
+    async onArtRequest() {
+        if (!this.state.inputContent.trim()) {
+            return alert("Escribe primero qué quieres que dibuje el Sensei.");
+        }
+        await this.sendMessage(true);
+    }
+
     // --- ENVÍO DE MENSAJES ---
-    async sendMessage() {
+    async sendMessage(force_image = false) {
         const content = this.state.inputContent.trim();
         const media = this.state.pendingMedia || (this.state.isLive ? this.takeSnapshot() : null);
         
         if (!content && !media) return;
-        if (this.state.isTyping) return;
+        if (this.state.isTyping || this.state.isGeneratingImage) return;
 
-        // Añadir mensaje visual del usuario
+        // Añadir mensaje visual del usuario UNIFICADO
         const msgId = Date.now();
-        if (content) {
-            this.state.messages.push({ id: msgId, role: 'user', content: content });
-        }
-        if (media && !this.state.isLive) {
-            this.state.messages.push({ id: msgId + 1, role: 'user', content: media, isImage: true });
-        }
+        this.state.messages.push({ 
+            id: msgId, 
+            role: 'user', 
+            content: content, 
+            image: media && !this.state.isLive ? media : null 
+        });
 
         this.state.inputContent = '';
         this.state.pendingMedia = null;
-        this.state.isTyping = true;
+        
+        if (force_image) {
+            this.state.isGeneratingImage = true;
+        } else {
+            this.state.isTyping = true;
+        }
 
         try {
             // Llamar al proveedor
             const result = await rpc("/gym/ai_sensei/chat", {
                 message: content || "Analiza esta imagen del dojo.",
                 media: media,
+                generate_image: force_image,
                 history: this.state.messages.map(m => ({ 
                     role: m.role === 'sensei' ? 'assistant' : 'user', 
                     content: m.isImage ? "Envié una imagen." : m.content 
@@ -225,7 +292,18 @@ export class AISensei extends Component {
                 this.addSenseiMessage(`⚠️ ${result.error}`);
             } else {
                 this.addSenseiMessage(result.response);
-                // Si el modo voz (autoSpeak) está activo o estamos en modo VoiceOnly, el Sensei habla
+                
+                // Si la IA generó una imagen (Dojo Artist)
+                if (result.is_image && result.generated_image) {
+                    this.state.messages.push({ 
+                        id: Date.now() + 1, 
+                        role: 'sensei', 
+                        content: result.generated_image, 
+                        isImage: true 
+                    });
+                }
+
+                // Voz si aplica
                 if (this.state.autoSpeak || this.state.isVoiceOnly || this.state.isLive) {
                     this.speak(result.response);
                 }
@@ -234,6 +312,7 @@ export class AISensei extends Component {
             this.addSenseiMessage("Mi conexión espiritual falló. Inténtalo de nuevo.");
         } finally {
             this.state.isTyping = false;
+            this.state.isGeneratingImage = false;
         }
     }
 
@@ -250,8 +329,18 @@ export class AISensei extends Component {
         this.sendMessage();
     }
 
+    resetConversation() {
+        if (confirm("¿Seguro que quieres borrar la memoria actual del Sensei?")) {
+            this.state.messages = [
+                { id: Date.now(), role: 'sensei', content: 'Oss. Mi mente está limpia. ¿En qué vamos a enfocarnos ahora?' }
+            ];
+            this.speak("Mente limpia. Empecemos de nuevo.");
+        }
+    }
+
     onBack() {
         this.stopLiveMode();
+        this.stopVoiceOnlyMode();
         this.actionService.doAction({
             type: "ir.actions.client",
             tag: "gym_dashboard_client_action",

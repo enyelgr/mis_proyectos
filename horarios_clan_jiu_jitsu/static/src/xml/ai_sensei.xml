@@ -3,25 +3,28 @@
     <t t-name="horarios_clan_jiu_jitsu.AISensei" owl="1">
         <div class="ai-sensei-wrapper">
             <!-- Header Futurista -->
-            <div class="ai-sensei-header">
-                <div class="ai-status-pulse"></div>
-                <h1>DOJO VISION <span class="ai-highlight">AI</span></h1>
-                <p>Sensei Virtual interactivo. ¿En qué puede ayudarte el Dojo hoy?</p>
-                <button class="ai-back-btn" t-on-click="onBack">
-                    <i class="fa fa-arrow-left"></i> Volver al Tablero
-                </button>
+            <div class="ai-sensei-header-compact">
+                <div class="header-main">
+                    <div class="ai-status-pulse"></div>
+                    <h1>DOJO VISION <span class="ai-highlight">AI</span></h1>
+                </div>
+                <div class="ai-header-actions-compact">
+                    <button class="ai-reset-btn" t-on-click="resetConversation" title="Limpiar Mente">
+                        <i class="fa fa-undo"></i> Reiniciar
+                    </button>
+                    <button class="ai-back-btn" t-on-click="onBack">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
             </div>
 
-            <!-- BOTONES DE ACCIÓN: SENSEI LIVE Y VOICE -->
+            <!-- Dashboard de Control -->
             <div class="ai-live-control">
-                <!-- Modo Video -->
                 <button t-attf-class="ai-live-btn #{state.isLive ? 'active' : ''}" t-on-click="toggleLiveMode">
                     <i t-attf-class="fa #{state.isLive ? 'fa-video-camera' : 'fa-play-circle'}"></i>
                     <t t-if="!state.isLive"> SENSEI LIVE (CÁMARA)</t>
                     <t t-else=""> FINALIZAR VIDEO</t>
                 </button>
-
-                <!-- Modo Solo Audio -->
                 <button t-attf-class="ai-voice-only-btn #{state.isVoiceOnly ? 'active' : ''}" t-on-click="toggleVoiceOnlyMode">
                     <i t-attf-class="fa #{state.isVoiceOnly ? 'fa-phone' : 'fa-microphone'}"></i>
                     <t t-if="!state.isVoiceOnly"> CHAT DE VOZ</t>
@@ -29,34 +32,20 @@
                 </button>
             </div>
 
-            <!-- CONTENEDOR DE PRODUCTO: SENSEI LIVE / VOICE (SOLO CUANDO ESTÁ ACTIVO) -->
-            <div class="sensei-live-overlay" t-if="state.isLive || state.isVoiceOnly">
-                <div class="sensei-camera-circle" t-if="state.isLive">
+            <!-- Live Overlay -->
+            <div t-if="state.isLive || state.isVoiceOnly" class="sensei-live-overlay">
+                <div t-if="state.isLive" class="sensei-camera-circle">
                     <video t-ref="webcamVideo" autoplay="true" playsinline="true"></video>
-                    <canvas t-ref="snapshotCanvas" style="display: none;"></canvas>
                     <div class="camera-neon-ring"></div>
                 </div>
-
-                <!-- Avatar Alternativo para Solo Voz -->
-                <div class="sensei-voice-avatar" t-else="">
+                <div t-else="" class="sensei-voice-avatar">
                     <i class="fa fa-braille"></i>
                     <div class="voice-neon-glow"></div>
                 </div>
-                
-                <div class="sensei-voice-interaction">
-                    <div t-attf-class="voice-waves #{state.isListening ? 'active' : ''}">
-                        <span></span><span></span><span></span><span></span><span></span>
-                    </div>
-                    <p class="live-status-text">
-                        <t t-if="state.isListening">Sensei te está escuchando...</t>
-                        <t t-elif="state.isTyping">Sensei está analizando...</t>
-                        <t t-else="">Háblale al Sensei...</t>
-                    </p>
-                </div>
             </div>
 
-            <!-- TERMINAL DE CHAT SENSEI -->
-            <div t-attf-class="ai-chat-wrapper #{state.isLive || state.isVoiceOnly ? 'chat-minimized' : ''}">
+            <!-- Chat Central -->
+            <div t-attf-class="ai-chat-wrapper #{ (state.isLive || state.isVoiceOnly) ? 'chat-minimized' : '' }">
                 <div class="ai-chat-messages" t-ref="chatMessages">
                     <t t-foreach="state.messages" t-as="msg" t-key="msg.id">
                         <div t-attf-class="ai-message-bubble #{msg.role === 'user' ? 'msg-user' : 'msg-sensei'}">
@@ -64,11 +53,27 @@
                                 <i class="fa fa-braille"></i>
                             </div>
                             <div class="msg-content">
-                                <t t-if="msg.isImage">
-                                    <img t-att-src="msg.content" class="msg-img-preview"/>
+                                <!-- Bloque de Imagen -->
+                                <t t-if="msg.isImage || msg.image">
+                                    <div class="ai-image-container">
+                                        <img t-att-src="msg.isImage ? msg.content : msg.image" 
+                                             class="msg-img-preview" 
+                                             t-on-click="() => this.openLightbox(msg.isImage ? msg.content : msg.image)"/>
+                                        <div class="ai-image-actions">
+                                            <button class="ai-img-action-btn" t-on-click.stop="() => this.downloadImage(msg.isImage ? msg.content : msg.image)" title="Descargar">
+                                                <i class="fa fa-download"></i>
+                                            </button>
+                                            <button class="ai-img-action-btn" t-on-click.stop="() => this.openLightbox(msg.isImage ? msg.content : msg.image)" title="Ampliar">
+                                                <i class="fa fa-expand"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </t>
-                                <t t-else="">
-                                    <t t-esc="msg.content"/>
+                                <!-- Bloque de Texto -->
+                                <t t-if="msg.content &amp;&amp; !msg.isImage">
+                                    <div class="msg-text">
+                                        <t t-esc="msg.content"/>
+                                    </div>
                                 </t>
                             </div>
                         </div>
@@ -76,56 +81,64 @@
                     
                     <!-- Indicador de pensando -->
                     <div class="ai-message-bubble msg-sensei" t-if="state.isTyping">
-                        <div class="msg-avatar">
-                            <i class="fa fa-braille"></i>
-                        </div>
+                        <div class="msg-avatar"><i class="fa fa-braille"></i></div>
                         <div class="msg-content typing-dots">
                             <span></span><span></span><span></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Entradas del Chat -->
-                <div class="ai-chat-input-container">
-                    <!-- Botón de Voz Opcional (Altavoz) -->
-                    <button t-attf-class="ai-speak-toggle #{state.autoSpeak ? 'active' : ''}" 
-                            t-on-click="toggleAutoSpeak" 
-                            title="Respuesta por voz opcional">
-                        <i t-attf-class="fa #{state.autoSpeak ? 'fa-volume-up' : 'fa-volume-off'}"></i>
-                    </button>
-
-                    <!-- Botón de Adjuntar Imagen -->
-                    <label class="ai-attachment-btn">
-                        <i class="fa fa-paperclip"></i>
-                        <input type="file" accept="image/*,video/*" t-on-change="onFileChange" style="display: none;"/>
-                    </label>
-
-                    <input type="text" 
-                           class="ai-chat-input" 
-                           placeholder="Pregúntale lo que quieras al Sensei..." 
-                           t-model="state.inputContent"
-                           t-on-keydown="onInputKeydown"/>
-                    
-                    <button t-attf-class="ai-mic-btn #{state.isListening ? 'active' : ''}" t-on-click="toggleVoiceInput">
-                        <i class="fa fa-microphone"></i>
-                    </button>
-
-                    <button class="ai-chat-send-btn" t-on-click="sendMessage">
-                        <i class="fa fa-paper-plane"></i>
-                    </button>
+                <!-- Input Fijo -->
+                <div class="ai-input-fixed">
+                    <div t-if="state.pendingMedia" class="ai-attachment-preview">
+                        <div class="preview-item">
+                            <img t-att-src="state.pendingMedia" alt="Vista previa"/>
+                            <button class="ai-remove-attachment" t-on-click="removeAttachment">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ai-chat-input-container">
+                        <button t-attf-class="ai-speak-toggle #{state.autoSpeak ? 'active' : ''}" t-on-click="toggleAutoSpeak" title="Voz automática">
+                            <i t-attf-class="fa #{state.autoSpeak ? 'fa-volume-up' : 'fa-volume-off'}"></i>
+                        </button>
+                        <button class="ai-art-btn" t-on-click="onArtRequest" title="Dojo Artist (IA Art)">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <label class="ai-attachment-btn" title="Adjuntar imagen">
+                            <i class="fa fa-paperclip"></i>
+                            <input type="file" accept="image/*" t-on-change="onFileChange" style="display:none;"/>
+                        </label>
+                        <input type="text" 
+                               class="ai-chat-input" 
+                               t-att-placeholder="state.isGeneratingImage ? 'El Sensei está pintando...' : 'Escribe tu mensaje o adjunta una foto...'" 
+                               t-model="state.inputContent"
+                               t-on-keydown="onInputKeydown"/>
+                        <button class="ai-chat-send-btn" t-on-click="sendMessage">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sugerencias de Inicio (Solo fuera de Live) -->
-            <div class="ai-quick-prompts" t-if="!state.isLive &amp;&amp; state.messages.length &lt;= 1">
-                <button t-on-click="() => this.sendPrompt('¿Cómo puedo mejorar la retención de alumnos?')">🎯 Retención</button>
-                <button t-on-click="() => this.sendPrompt('Dame una idea de marketing para Instagram')">📸 Marketing</button>
-                <button t-on-click="() => this.sendPrompt('¿Qué disciplina debería añadir al dojo?')">🥋 Disciplinas</button>
-            </div>
-
-            <!-- Footer con Frase de Bushido -->
+            <!-- Footer -->
             <div class="ai-sensei-footer">
                 <p class="bushido-quote">"El guerrero que se prepara para el futuro, ya ha ganado la mitad de la batalla."</p>
+            </div>
+
+            <!-- VISOR LIGHTBOX -->
+            <div t-if="state.activeLightbox" class="ai-lightbox-overlay" t-on-click="closeLightbox">
+                <div class="ai-lightbox-content" t-on-click.stop="">
+                    <img t-att-src="state.activeLightbox" alt="Dojo Art Fullscreen"/>
+                    <div class="ai-lightbox-actions">
+                        <button class="ai-lightbox-btn" t-on-click="() => this.downloadImage(state.activeLightbox)">
+                            <i class="fa fa-download"></i> Descargar Original
+                        </button>
+                        <button class="ai-lightbox-btn btn-close" t-on-click="closeLightbox">
+                            <i class="fa fa-times"></i> Cerrar
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </t>
