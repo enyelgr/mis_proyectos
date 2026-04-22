@@ -9,10 +9,10 @@
                     <h1>DOJO VISION <span class="ai-highlight">AI</span></h1>
                 </div>
                 <div class="ai-header-actions-compact">
-                    <button class="ai-reset-btn" t-on-click="resetConversation" title="Limpiar Mente">
+                    <button type="button" class="ai-reset-btn" t-on-click="resetConversation" title="Limpiar Mente">
                         <i class="fa fa-undo"></i> Reiniciar
                     </button>
-                    <button class="ai-back-btn" t-on-click="onBack">
+                    <button type="button" class="ai-back-btn" t-on-click="onBack">
                         <i class="fa fa-times"></i>
                     </button>
                 </div>
@@ -20,12 +20,12 @@
 
             <!-- Dashboard de Control -->
             <div class="ai-live-control">
-                <button t-attf-class="ai-live-btn #{state.isLive ? 'active' : ''}" t-on-click="toggleLiveMode">
+                <button type="button" t-attf-class="ai-live-btn #{state.isLive ? 'active' : ''}" t-on-click="toggleLiveMode">
                     <i t-attf-class="fa #{state.isLive ? 'fa-video-camera' : 'fa-play-circle'}"></i>
                     <t t-if="!state.isLive"> SENSEI LIVE (CÁMARA)</t>
                     <t t-else=""> FINALIZAR VIDEO</t>
                 </button>
-                <button t-attf-class="ai-voice-only-btn #{state.isVoiceOnly ? 'active' : ''}" t-on-click="toggleVoiceOnlyMode">
+                <button type="button" t-attf-class="ai-voice-only-btn #{state.isVoiceOnly ? 'active' : ''}" t-on-click="toggleVoiceOnlyMode">
                     <i t-attf-class="fa #{state.isVoiceOnly ? 'fa-phone' : 'fa-microphone'}"></i>
                     <t t-if="!state.isVoiceOnly"> CHAT DE VOZ</t>
                     <t t-else=""> FINALIZAR VOZ</t>
@@ -99,11 +99,8 @@
                         </div>
                     </div>
                     <div class="ai-chat-input-container">
-                        <button t-attf-class="ai-speak-toggle #{state.autoSpeak ? 'active' : ''}" t-on-click="toggleAutoSpeak" title="Voz automática">
+                        <button type="button" t-attf-class="ai-speak-toggle #{state.autoSpeak ? 'active' : ''}" t-on-click="toggleAutoSpeak" title="Voz automática">
                             <i t-attf-class="fa #{state.autoSpeak ? 'fa-volume-up' : 'fa-volume-off'}"></i>
-                        </button>
-                        <button class="ai-art-btn" t-on-click="onArtRequest" title="Dojo Artist (IA Art)">
-                            <i class="fa fa-paint-brush"></i>
                         </button>
                         <label class="ai-attachment-btn" title="Adjuntar imagen">
                             <i class="fa fa-paperclip"></i>
@@ -111,7 +108,7 @@
                         </label>
                         <input type="text" 
                                class="ai-chat-input" 
-                               t-att-placeholder="state.isGeneratingImage ? 'El Sensei está pintando...' : 'Escribe tu mensaje o adjunta una foto...'" 
+                               t-att-placeholder="state.isTyping ? 'El Sensei está pensando...' : 'Escribe tu mensaje o adjunta una foto...'" 
                                t-model="state.inputContent"
                                t-on-keydown="onInputKeydown"/>
                         <button class="ai-chat-send-btn" t-on-click="sendMessage">

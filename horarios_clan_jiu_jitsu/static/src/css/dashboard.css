@@ -1,10 +1,12 @@
 /* Contenedor Maestro */
 .gym-dashboard-wrapper {
-    min-height: 100vh;
+    height: 100vh; /* Forzamos altura de pantalla */
+    overflow-y: auto; /* Habilitamos el scroll vertical */
     background-color: #121212;
     padding: 2rem;
     font-family: 'Inter', 'Roboto', sans-serif;
     color: #ffffff;
+    -webkit-overflow-scrolling: touch; /* Suavidad en iPhone/iOS */
 }
 
 /* Cabecera */
@@ -123,9 +125,10 @@
     gap: 12px; /* La flecha se desliza ligeramente */
 }
 
-/* Efectos visuales de Odoo globales para esconder barras grises si es necesario */
+/* Efectos visuales de Odoo globales */
 .o_action_manager > .gym-dashboard-wrapper {
-    height: 100%;
+    height: 100vh;
+    overflow-y: auto !important;
 }
 
 /* Logo Flotante Inferior Izquierdo */
@@ -339,4 +342,76 @@
     border-radius: 50%;
     object-fit: cover;
     background-color: white;
+}
+
+/* RESPONSIVIDAD MÓVIL DASHBOARD (V17.1) */
+@media (max-width: 768px) {
+    .gym-dashboard-wrapper {
+        padding: 1rem;
+    }
+
+    .gym-dashboard-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .gym-dashboard-header h1 {
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+    }
+
+    .gym-dashboard-container {
+        gap: 1rem;
+    }
+
+    .gym-area-card {
+        width: 100%;
+        height: 160px; /* Más compactas en móvil */
+        border-radius: 15px;
+    }
+
+    .gym-area-content h2 {
+        font-size: 1.3rem;
+        margin-bottom: 5px;
+    }
+
+    .ai-insight-panel {
+        padding: 15px;
+        margin: 20px 0;
+    }
+
+    .ai-insight-content {
+        gap: 15px;
+    }
+
+    .ai-brain-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+
+    .ai-insight-text h3 {
+        font-size: 1.1rem;
+    }
+
+    .ai-insight-text p {
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+
+    /* Quitamos el posicionamiento fijado para que los logos no tapen las tarjetas */
+    .gym-dashboard-logo-container, 
+    .gym-dashboard-logo-container-right {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .gym-dashboard-logo {
+        width: 180px; /* Más pequeño en móvil */
+    }
+
+    .gym-dashboard-logo-container-right .gym-dashboard-logo {
+        width: 100px;
+    }
 }

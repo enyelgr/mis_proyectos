@@ -242,23 +242,14 @@ export class AISensei extends Component {
         this.state.pendingMedia = null;
     }
 
-    // --- GENERACIÓN DE IMÁGENES (DOJO ARTIST) ---
-    async onArtRequest() {
-        if (!this.state.inputContent.trim()) {
-            return alert("Escribe primero qué quieres que dibuje el Sensei.");
-        }
-        await this.sendMessage(true);
-    }
-
-    // --- ENVÍO DE MENSAJES ---
-    async sendMessage(force_image = false) {
+    async sendMessage() {
         const content = this.state.inputContent.trim();
         const media = this.state.pendingMedia || (this.state.isLive ? this.takeSnapshot() : null);
         
         if (!content && !media) return;
-        if (this.state.isTyping || this.state.isGeneratingImage) return;
+        if (this.state.isTyping) return;
 
-        // Añadir mensaje visual del usuario UNIFICADO
+        // Añadir mensaje visual del usuario
         const msgId = Date.now();
         this.state.messages.push({ 
             id: msgId, 
@@ -269,19 +260,13 @@ export class AISensei extends Component {
 
         this.state.inputContent = '';
         this.state.pendingMedia = null;
-        
-        if (force_image) {
-            this.state.isGeneratingImage = true;
-        } else {
-            this.state.isTyping = true;
-        }
+        this.state.isTyping = true;
 
         try {
-            // Llamar al proveedor
+            // Llamar al proveedor informativo
             const result = await rpc("/gym/ai_sensei/chat", {
                 message: content || "Analiza esta imagen del dojo.",
                 media: media,
-                generate_image: force_image,
                 history: this.state.messages.map(m => ({ 
                     role: m.role === 'sensei' ? 'assistant' : 'user', 
                     content: m.isImage ? "Envié una imagen." : m.content 
@@ -293,16 +278,6 @@ export class AISensei extends Component {
             } else {
                 this.addSenseiMessage(result.response);
                 
-                // Si la IA generó una imagen (Dojo Artist)
-                if (result.is_image && result.generated_image) {
-                    this.state.messages.push({ 
-                        id: Date.now() + 1, 
-                        role: 'sensei', 
-                        content: result.generated_image, 
-                        isImage: true 
-                    });
-                }
-
                 // Voz si aplica
                 if (this.state.autoSpeak || this.state.isVoiceOnly || this.state.isLive) {
                     this.speak(result.response);
@@ -312,7 +287,6 @@ export class AISensei extends Component {
             this.addSenseiMessage("Mi conexión espiritual falló. Inténtalo de nuevo.");
         } finally {
             this.state.isTyping = false;
-            this.state.isGeneratingImage = false;
         }
     }
 
@@ -321,7 +295,10 @@ export class AISensei extends Component {
     }
 
     onInputKeydown(ev) {
-        if (ev.key === "Enter") this.sendMessage();
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.sendMessage();
+        }
     }
 
     sendPrompt(text) {

@@ -3,7 +3,7 @@
     'author': 'Enyelber',
     'website': '',
     'category': 'Sports/Facilities',
-    'version': '15.2',
+    'version': '19.5',
     'icon': '/horarios_clan_jiu_jitsu/static/description/icon.png',
     'depends': ['base', 'web'],
     'data': [

@@ -755,3 +755,83 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* RESPONSIVIDAD MÓVIL (V17.0) */
+@media (max-width: 768px) {
+    .ai-sensei-wrapper {
+        padding: 8px;
+    }
+
+    .ai-sensei-header-compact {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    .header-main h1 {
+        font-size: 1.4rem;
+        letter-spacing: 1.5px;
+    }
+
+    .ai-live-control {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .ai-live-btn, .ai-voice-only-btn {
+        width: 100%;
+        margin-left: 0 !important;
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .sensei-camera-circle {
+        width: 260px;
+        height: 260px;
+    }
+
+    .ai-chat-wrapper {
+        width: 100%;
+        border-radius: 20px;
+    }
+
+    .ai-chat-messages {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .ai-message-bubble {
+        max-width: 95%;
+    }
+
+    .msg-user {
+        padding: 12px 18px;
+        font-size: 1rem;
+    }
+
+    .msg-sensei .msg-content {
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+    .ai-chat-input-container {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .ai-chat-input {
+        padding: 10px 15px;
+        font-size: 0.95rem;
+    }
+
+    .ai-chat-send-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .ai-header-actions-compact {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
