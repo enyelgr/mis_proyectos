@@ -4,3 +4,4 @@ access_gym_horario_user,gym.horario user,model_gym_horario,base.group_user,1,1,1
 access_gym_horario_change_wizard,gym.horario.change.wizard,model_gym_horario_change_wizard,base.group_user,1,1,1,1
 access_gym_horario_report_wizard,gym.horario.report.wizard,model_gym_horario_report_wizard,base.group_user,1,1,1,1
 access_gym_horario_generador_wizard,gym_horario_generador_wizard_access,model_gym_horario_generador_wizard,base.group_user,1,1,1,1
+access_gym_horario_importar_wizard,gym.horario.importar.wizard,model_gym_horario_importar_wizard,base.group_user,1,1,1,1

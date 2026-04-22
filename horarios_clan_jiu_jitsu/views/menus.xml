@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú Raíz del Gimnasio - Definido temprano para evitar errores de carga -->
+    <menuitem id="menu_gym_root" name="Gimnasio" sequence="10" web_icon="horarios_clan_jiu_jitsu,static/description/icon.png"/>
+</odoo>

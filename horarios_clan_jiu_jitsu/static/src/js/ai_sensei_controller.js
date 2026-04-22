@@ -25,8 +25,12 @@ export class AISensei extends Component {
             autoSpeak: false,
             isGeneratingImage: false,
             pendingMedia: null,
-            activeLightbox: null
+            activeLightbox: null,
+            facingMode: 'user', // 'user' (frontal), 'environment' (trasera)
+            hasMultipleCameras: false
         });
+
+        this._checkCameras();
 
         // Configuración de Reconocimiento de Voz
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -147,7 +151,21 @@ export class AISensei extends Component {
 
     async startLiveMode() {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 }, audio: true });
+            const constraints = {
+                video: {
+                    facingMode: this.state.facingMode,
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                },
+                audio: true
+            };
+            
+            // Si ya hay un stream, lo detenemos primero
+            if (this.stream) {
+                this.stream.getTracks().forEach(t => t.stop());
+            }
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             this.state.isLive = true;
             this.stream = stream;
             setTimeout(() => {
@@ -156,9 +174,32 @@ export class AISensei extends Component {
                     this.webcamVideoRef.el.muted = true;
                 }
             }, 100);
-            this.speak("Modo Live activado. Estoy viéndote.");
+            
+            if (!this._hasSpokenWelcome) {
+                this.speak("Modo Live activado. Estoy viéndote.");
+                this._hasSpokenWelcome = true;
+            }
             setTimeout(() => this._startListening(), 2000);
-        } catch (err) { alert("Error cámara: " + err.message); }
+        } catch (err) { 
+            console.error("Error cámara:", err);
+            alert("Error cámara: " + err.message); 
+        }
+    }
+
+    async switchCamera() {
+        this.state.facingMode = this.state.facingMode === 'user' ? 'environment' : 'user';
+        await this.startLiveMode();
+    }
+
+    async _checkCameras() {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
+            this.state.hasMultipleCameras = videoDevices.length > 1;
+            console.log("Cámaras detectadas:", videoDevices.length);
+        } catch (e) {
+            console.log("Error detectando cámaras:", e);
+        }
     }
 
     async startVoiceOnlyMode() {
@@ -276,7 +317,18 @@ export class AISensei extends Component {
             if (result.error) {
                 this.addSenseiMessage(`⚠️ ${result.error}`);
             } else {
-                this.addSenseiMessage(result.response);
+                // Manejo de imagen directa (Local URL Proxy)
+                if (result.direct_image_url) {
+                    this.state.messages.push({ 
+                        id: Date.now(), 
+                        role: 'sensei', 
+                        content: result.response,
+                        image: result.direct_image_url,
+                        isImage: true 
+                    });
+                } else {
+                    this.addSenseiMessage(result.response);
+                }
                 
                 // Voz si aplica
                 if (this.state.autoSpeak || this.state.isVoiceOnly || this.state.isLive) {
@@ -291,7 +343,30 @@ export class AISensei extends Component {
     }
 
     addSenseiMessage(text) {
-        this.state.messages.push({ id: Date.now(), role: 'sensei', content: text });
+        let imageToRender = null;
+        let cleanText = text;
+
+        // Detector de Tag de Imagen [GEN_IMAGE: prompt]
+        const imageMatch = text.match(/\[GEN_IMAGE:\s*([^\]]+)\]/i);
+        if (imageMatch) {
+            const prompt = imageMatch[1].trim();
+            // Construir URL de Pollinations (Formato ultra-estable)
+            const seed = Math.floor(Math.random() * 999999);
+            // Usamos el endpoint raíz que es más tolerante a prompts largos
+            imageToRender = `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${seed}`;
+            
+            // Limpiar el tag del texto para que no sea visible para el usuario
+            cleanText = text.replace(/\[GEN_IMAGE:.*?\]/i, '').trim();
+            if (!cleanText) cleanText = "He visualizado tu petición:";
+        }
+
+        this.state.messages.push({ 
+            id: Date.now(), 
+            role: 'sensei', 
+            content: cleanText,
+            image: imageToRender, // Se renderizará en el t-if del XML
+            isImage: !!imageToRender 
+        });
     }
 
     onInputKeydown(ev) {

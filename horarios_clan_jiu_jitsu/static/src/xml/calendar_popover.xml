@@ -17,5 +17,19 @@
                 </div>
             </t>
         </xpath>
+        
+        <!-- Override the time line for gym.horario -->
+        <xpath expr="//li[i[contains(@class, 'fa-clock-o')]]" position="replace">
+            <li t-if="!props.record.isAllDay" class="list-group-item border-0 pt-0 pb-1">
+                <i class="fa fa-clock-o me-2" title="Time"/>
+                <t t-if="props.model.resModel == 'gym.horario'">
+                    <span t-esc="props.record.rawRecord.hora_inicio_str"/> - <span t-esc="props.record.rawRecord.hora_fin_str"/>
+                    (<t t-esc="props.record.rawRecord.duration"/> horas)
+                </t>
+                <t t-else="">
+                    <t t-esc="props.record.start.toFormat('T')"/> - <t t-esc="props.record.end.toFormat('T')"/>
+                </t>
+            </li>
+        </xpath>
     </t>
 </templates>

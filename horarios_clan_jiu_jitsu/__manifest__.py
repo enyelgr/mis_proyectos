@@ -8,10 +8,13 @@
     'depends': ['base', 'web'],
     'data': [
         'security/ir.model.access.csv',
+        'views/menus.xml',
         'data/ai_config_data.xml',
+        'data/gym_master_data.xml',
         'wizard/wizards_views.xml',
-        'reports/report_horario_area.xml',
+        'wizard/importar_horario_wizard_view.xml',
         'views/vistas.xml',
+        'reports/report_horario_area.xml',
         'views/res_config_settings_views.xml',
     ],
     'assets': {
@@ -21,6 +24,7 @@
             'horarios_clan_jiu_jitsu/static/src/css/instructor_kanban.css',
             'horarios_clan_jiu_jitsu/static/src/css/dashboard.css',
             'horarios_clan_jiu_jitsu/static/src/css/ai_sensei.css',
+            'horarios_clan_jiu_jitsu/static/src/xml/calendar_event.xml',
             'horarios_clan_jiu_jitsu/static/src/xml/calendar_popover.xml',
             'horarios_clan_jiu_jitsu/static/src/xml/dashboard.xml',
             'horarios_clan_jiu_jitsu/static/src/xml/ai_sensei.xml',

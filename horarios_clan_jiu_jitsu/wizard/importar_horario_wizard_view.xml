@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_gym_horario_importar_wizard_form" model="ir.ui.view">
+            <field name="name">gym.horario.importar.wizard.form</field>
+            <field name="model">gym.horario.importar.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Importar Horario" class="gym_excel_wizard">
+                    <!-- HEADER PREMIUM -->
+                    <div class="gym_wizard_header_excel">
+                        <div class="gym_wizard_icon_excel">
+                            <i class="fa fa-file-excel-o"/>
+                        </div>
+                        <div class="gym_wizard_titles">
+                            <h2>Transmisión de Horarios</h2>
+                            <p style="margin:0; opacity: 0.8; font-style: italic;">Potenciado por Dojo Vision AI</p>
+                        </div>
+                    </div>
+
+                    <div class="gym_wizard_body">
+                        <sheet>
+                            <group>
+                                <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                                    <!-- PASO 1 -->
+                                    <div style="border-left: 4px solid #27ae60; padding-left: 15px;">
+                                        <div style="font-weight: bold; color: #27ae60; margin-bottom: 5px;">PASO 1: OBJETIVO</div>
+                                        <field name="area" widget="radio" options="{'horizontal': true}"/>
+                                    </div>
+
+                                    <!-- PASO 2 -->
+                                    <div style="border-left: 4px solid #e63946; padding-left: 15px;">
+                                        <div style="font-weight: bold; color: #e63946; margin-bottom: 10px;">PASO 2: DOCUMENTO</div>
+                                        <field name="excel_file" filename="file_name" string="Subir Archivo"/>
+                                        <field name="file_name" invisible="1"/>
+                                    </div>
+                                </div>
+                            </group>
+
+                            <!-- TARJETA DE INSTRUCCIONES -->
+                            <div class="gym_instruction_card">
+                                <div class="gym_instruction_title">
+                                    <i class="fa fa-info-circle"/> Protocolo del Sensei
+                                </div>
+                                <div style="color: #5c5c5c; font-size: 0.85rem; line-height: 1.5;">
+                                    El archivo debe seguir la estructura tradicional del Dojo:
+                                    <ul style="margin: 5px 0 0 15px; padding: 0;">
+                                        <li><strong>Columnas:</strong> Lunes a Domingo.</li>
+                                        <li><strong>Línea de Tiempo:</strong> Horas en la primera o segunda columna.</li>
+                                        <li><strong>Formatos:</strong> .xlsx, .ods (Recomendado), .xls, o .csv.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </sheet>
+                    </div>
+
+                    <footer>
+                        <button name="action_import" string="Sincronizar Dojo" type="object" class="btn-primary" icon="fa-refresh"/>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_gym_horario_importar_wizard" model="ir.actions.act_window">
+            <field name="name">Importar desde Excel</field>
+            <field name="res_model">gym.horario.importar.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_gym_horario_importar" 
+                  name="Importar Excel" 
+                  parent="menu_gym_root" 
+                  action="action_gym_horario_importar_wizard" 
+                  sequence="40"/>
+    </data>
+</odoo>

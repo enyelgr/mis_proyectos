@@ -208,10 +208,13 @@
         <field name="name">gym.horario.calendar</field>
         <field name="model">gym.horario</field>
         <field name="arch" type="xml">
-            <calendar js_class="gym_calendar" create="0" edit="0" delete="0" quick_create="0" string="Horario Semanal" date_start="fecha_hora_inicio" date_stop="fecha_hora_fin" color="instructor_id" mode="week" event_open_popup="true">
-                <field name="instructor_id" avatar_field="image"/>
+            <calendar string="Horarios del Dojo" date_start="fecha_hora_inicio" date_stop="fecha_hora_fin" color="area" mode="week" quick_create="0" event_open_popup="true">
+                <field name="instructor_id" filters="1"/>
                 <field name="area"/>
-                <field name="instructor_especialidad"/>
+                <field name="state"/>
+                <field name="hora_inicio_str" invisible="1"/>
+                <field name="hora_fin_str" invisible="1"/>
+                <field name="duration" invisible="1"/>
             </calendar>
         </field>
     </record>
@@ -381,9 +384,9 @@
     </record>
 
 
-    <menuitem id="menu_gym_root" name="Gimnasio" sequence="10" web_icon="horarios_clan_jiu_jitsu,static/description/icon.png"/>
     <menuitem id="menu_gym_dashboard" name="Tablero Principal" parent="menu_gym_root" action="action_gym_dashboard" sequence="1"/>
 
     <menuitem id="menu_gym_instructores" name="Instructores" parent="menu_gym_root" action="action_instructores" sequence="20"/>
+
     <menuitem id="menu_gym_report_wizard" name="Descargar Cartelera" parent="menu_gym_root" action="action_gym_report_wizard" sequence="30"/>
 </odoo>

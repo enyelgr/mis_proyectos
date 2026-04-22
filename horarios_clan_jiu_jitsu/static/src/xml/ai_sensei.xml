@@ -37,6 +37,14 @@
                 <div t-if="state.isLive" class="sensei-camera-circle">
                     <video t-ref="webcamVideo" autoplay="true" playsinline="true"></video>
                     <div class="camera-neon-ring"></div>
+                    <!-- Botón de Cambio de Cámara (Solo si hay múltiples) -->
+                    <button t-if="state.hasMultipleCameras" 
+                            type="button" 
+                            class="ai-camera-switch-btn" 
+                            t-on-click="switchCamera" 
+                            title="Cambiar Cámara">
+                        <i class="fa fa-refresh"></i>
+                    </button>
                 </div>
                 <div t-else="" class="sensei-voice-avatar">
                     <i class="fa fa-braille"></i>
@@ -56,9 +64,9 @@
                                 <!-- Bloque de Imagen -->
                                 <t t-if="msg.isImage || msg.image">
                                     <div class="ai-image-container">
-                                        <img t-att-src="msg.isImage ? msg.content : msg.image" 
+                                        <img t-att-src="msg.image || (msg.isImage ? msg.content : '')" 
                                              class="msg-img-preview" 
-                                             t-on-click="() => this.openLightbox(msg.isImage ? msg.content : msg.image)"/>
+                                             t-on-click="() => this.openLightbox(msg.image || msg.content)"/>
                                         <div class="ai-image-actions">
                                             <button class="ai-img-action-btn" t-on-click.stop="() => this.downloadImage(msg.isImage ? msg.content : msg.image)" title="Descargar">
                                                 <i class="fa fa-download"></i>

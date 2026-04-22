@@ -29,7 +29,7 @@ class GymHorario(models.Model):
     _description = 'Bloque de Horario de Clase'
     _order = 'fecha asc, hora_inicio asc, area asc'
 
-    name = fields.Char(string='Referencia', compute='_compute_name', store=False)
+    name = fields.Char(string='Referencia', compute='_compute_name', store=True)
     fecha = fields.Date(string='Fecha', required=True, default=fields.Date.today)
     fecha_hora_inicio = fields.Datetime(string='Fecha/Hora Inicio', compute='_compute_datetime', inverse='_inverse_datetime', store=True)
     fecha_hora_fin = fields.Datetime(string='Fecha/Hora Fin', compute='_compute_datetime', inverse='_inverse_datetime', store=True)
@@ -44,8 +44,8 @@ class GymHorario(models.Model):
     ], string='Día de la Semana', compute='_compute_dia_semana', inverse='_inverse_dia_semana', store=True, group_expand='_read_group_dia_semana')
     hora_inicio = fields.Float(string='Hora Inicio', required=True, default=9.0)
     hora_fin = fields.Float(string='Hora Fin', required=True, default=10.0)
-    hora_inicio_str = fields.Selection(TIME_SLOTS, string="Hora Inicio (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
-    hora_fin_str = fields.Selection(TIME_SLOTS, string="Hora Fin (AM/PM)", compute='_compute_horas_str', inverse='_inverse_horas_str')
+    hora_inicio_str = fields.Char(string="Hora Inicio (AM/PM)", compute='_compute_horas_str', store=True)
+    hora_fin_str = fields.Char(string="Hora Fin (AM/PM)", compute='_compute_horas_str', store=True)
     top_position = fields.Float(string='Posición vertical', compute='_compute_schedule_layout', store=True)
     block_height = fields.Float(string='Altura del bloque', compute='_compute_schedule_layout', store=True)
     duration = fields.Float(string='Duración (hrs)', compute='_compute_duration', store=True)
@@ -65,16 +65,23 @@ class GymHorario(models.Model):
 
     @api.depends('fecha', 'hora_inicio', 'hora_fin')
     def _compute_datetime(self):
-        user_tz_name = self.env.user.tz or self._context.get('tz') or 'UTC'
+        user_tz_name = self._context.get('tz') or self.env.user.tz or 'UTC'
         try:
             user_tz = pytz.timezone(user_tz_name)
         except pytz.UnknownTimeZoneError:
             user_tz = pytz.utc
             
         for rec in self:
+            if rec.fecha_hora_inicio and rec.fecha_hora_fin:
+                continue # No sobrescribir si ya viene manual
             if rec.fecha and rec.hora_inicio is not None and rec.hora_fin is not None:
-                h_start, m_start = int(rec.hora_inicio), int((rec.hora_inicio % 1) * 60)
+                h_start, m_start = int(rec.hora_inicio % 24), int((rec.hora_inicio % 1) * 60)
                 h_fin, m_fin = int(rec.hora_fin), int((rec.hora_fin % 1) * 60)
+                
+                # Manejo de hora >= 24 (Medianoche) para evitar ValueError
+                if h_fin >= 24:
+                    h_fin = 23
+                    m_fin = 59
                 
                 dt_start = datetime.combine(rec.fecha, time(hour=h_start, minute=m_start))
                 dt_fin = datetime.combine(rec.fecha, time(hour=h_fin, minute=m_fin))
@@ -86,7 +93,7 @@ class GymHorario(models.Model):
                 rec.fecha_hora_fin = False
 
     def _inverse_datetime(self):
-        user_tz_name = self.env.user.tz or self._context.get('tz') or 'UTC'
+        user_tz_name = self._context.get('tz') or self.env.user.tz or 'UTC'
         try:
             user_tz = pytz.timezone(user_tz_name)
         except pytz.UnknownTimeZoneError:
@@ -131,8 +138,17 @@ class GymHorario(models.Model):
     @api.depends('hora_inicio', 'hora_fin')
     def _compute_horas_str(self):
         for rec in self:
-            rec.hora_inicio_str = str(rec.hora_inicio) if rec.hora_inicio else False
-            rec.hora_fin_str = str(rec.hora_fin) if rec.hora_fin else False
+            rec.hora_inicio_str = self._format_12h(rec.hora_inicio)
+            rec.hora_fin_str = self._format_12h(rec.hora_fin)
+
+    def _format_12h(self, float_time):
+        if float_time is None: return False
+        h = int(float_time)
+        m = int((float_time % 1) * 60)
+        meridiem = "AM" if h < 12 else "PM"
+        h_12 = h if h <= 12 else h - 12
+        if h_12 == 0: h_12 = 12
+        return f"{h_12:02d}:{m:02d} {meridiem}"
 
     def _inverse_horas_str(self):
         for rec in self:
@@ -161,6 +177,8 @@ class GymHorario(models.Model):
             6: 'domingo',
         }
         for rec in self:
+            if rec.dia_semana:
+                continue # Respetar inyección manual
             if rec.fecha:
                 rec.dia_semana = mapping[rec.fecha.weekday()]
             else:
@@ -195,10 +213,11 @@ class GymHorario(models.Model):
     def _compute_name(self):
         for rec in self:
             if rec.instructor_id:
-                disc = rec.instructor_especialidad or 'Libre'
-                rec.name = f"{rec.instructor_id.name} | {disc}"
+                disc = (rec.instructor_especialidad or 'CLASE').upper()
+                name = rec.instructor_id.name.upper()
+                rec.name = f"{disc} | {name}"
             else:
-                rec.name = 'Horario Disponible'
+                rec.name = 'HORARIO DISPONIBLE'
 
     @api.depends('hora_inicio', 'hora_fin')
     def _compute_duration(self):
