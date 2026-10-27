@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Buenos Días, Scarlet 🌸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f8a4c8 0%, #e06fad 30%, #b95fb0 60%, #7b3fa0 100%);
+      font-family: 'Nunito', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .petal {
+      position: fixed;
+      top: -30px;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #ffb6d9, #ff85c0);
+      border-radius: 0 50% 50% 50%;
+      opacity: 0.8;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .petal:nth-child(1)  { left: 5%;  animation-duration: 7s;  animation-delay: 0s;   width: 10px; height: 10px; }
+    .petal:nth-child(2)  { left: 15%; animation-duration: 9s;  animation-delay: 1s;   width: 14px; height: 14px; }
+    .petal:nth-child(3)  { left: 25%; animation-duration: 6s;  animation-delay: 2s;   width: 8px;  height: 8px; }
+    .petal:nth-child(4)  { left: 35%; animation-duration: 10s; animation-delay: 0.5s; width: 12px; height: 12px; }
+    .petal:nth-child(5)  { left: 45%; animation-duration: 8s;  animation-delay: 3s;   width: 10px; height: 10px; }
+    .petal:nth-child(6)  { left: 55%; animation-duration: 7s;  animation-delay: 1.5s; width: 16px; height: 16px; }
+    .petal:nth-child(7)  { left: 65%; animation-duration: 9s;  animation-delay: 0.8s; width: 10px; height: 10px; }
+    .petal:nth-child(8)  { left: 75%; animation-duration: 6s;  animation-delay: 2.5s; width: 12px; height: 12px; }
+    .petal:nth-child(9)  { left: 85%; animation-duration: 11s; animation-delay: 0.2s; width: 8px;  height: 8px; }
+    .petal:nth-child(10) { left: 92%; animation-duration: 8s;  animation-delay: 1.8s; width: 14px; height: 14px; }
+
+    @keyframes fall {
+      0%   { transform: translateY(-30px) rotate(0deg);   opacity: 0.9; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse 6s ease-in-out infinite alternate;
+    }
+    .orb1 { width: 320px; height: 320px; background: rgba(255, 150, 200, 0.35); top: -80px;  left: -80px; }
+    .orb2 { width: 280px; height: 280px; background: rgba(200, 100, 220, 0.3);  bottom: -60px; right: -60px; animation-delay: 3s; }
+
+    @keyframes pulse {
+      from { transform: scale(1);    opacity: 0.6; }
+      to   { transform: scale(1.15); opacity: 1; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1.5px solid rgba(255, 255, 255, 0.45);
+      border-radius: 28px;
+      padding: 28px 24px 30px;
+      width: 340px;
+      max-width: 95vw;
+      box-shadow: 0 20px 60px rgba(160, 60, 160, 0.4), 0 0 0 1px rgba(255,255,255,0.15);
+      animation: floatIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+      text-align: center;
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(40px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    .img-wrapper {
+      position: relative;
+      display: inline-block;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 30px rgba(180, 60, 160, 0.45);
+    }
+    .img-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      border: 3px solid transparent;
+      background: linear-gradient(135deg, #ff85c0, #e04fbd, #9b3fa0) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      z-index: 2;
+    }
+    .img-wrapper img {
+      display: block;
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 18px;
+    }
+    .stars-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 80% 10%, rgba(255,255,200,0.18) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(200, 60, 160, 0.6);
+      margin-bottom: 6px;
+      animation: shimmer 3s ease-in-out infinite alternate;
+    }
+    @keyframes shimmer {
+      from { text-shadow: 0 2px 12px rgba(200, 60, 160, 0.6); }
+      to   { text-shadow: 0 2px 24px rgba(255, 120, 210, 0.95); }
+    }
+
+    .subtitle {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.75);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .message {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #fff;
+      line-height: 1.7;
+      text-align: center;
+      margin-bottom: 22px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .message .name-highlight {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffd6f0;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .btn {
+      padding: 11px 28px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      outline: none;
+    }
+    .btn:hover  { transform: translateY(-3px); filter: brightness(1.1); }
+    .btn:active { transform: translateY(0px);  filter: brightness(0.95); }
+    .btn-yes {
+      background: linear-gradient(135deg, #ff7ec7, #e040b5);
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(220, 60, 170, 0.5);
+    }
+    .btn-no {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.4);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    }
+
+    .hearts {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      display: block;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.15); }
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: linear-gradient(135deg, #ffe0f0, #ffd6f5);
+      border-radius: 22px;
+      padding: 32px 28px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(200,60,160,0.4);
+      animation: popIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .modal h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.8rem;
+      color: #c0388a;
+      margin-bottom: 10px;
+    }
+    .modal p {
+      font-size: 0.92rem;
+      color: #7a3a6a;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .modal-btn {
+      background: linear-gradient(135deg, #ff7ec7, #e040b5);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(220,60,170,0.4);
+      transition: transform 0.2s;
+    }
+    .modal-btn:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+  <div class="petal"></div>
+
+  <div class="card">
+    <div class="img-wrapper">
+      <img src="imagen.jpg" alt="Buenos días Scarlet" />
+      <div class="stars-overlay"></div>
+    </div>
+
+    <span class="hearts">💕 🌸 💕</span>
+    <h1 class="title">Buenos días, Scarlet</h1>
+    <p class="subtitle">✨ un nuevo día para sonreír ✨</p>
+
+    <div class="message">
+      Ey, <span class="name-highlight">Scarlet</span>! 👋🌸<br/><br/>
+      Solo quería decirte buenos días y que me alegra mucho haberte conocido ayer.
+      Espero que tengas un día increíble, lleno de buenas vibras y muchas sonrisas. ☀️<br/><br/>
+      ¡Que te vaya súper bien hoy! 😊💕
+    </div>
+
+    <div class="buttons">
+      <button id="btn-yes" class="btn btn-yes" onclick="showModal()">😊 ¡Gracias!</button>
+      <button id="btn-no"  class="btn btn-no"  onclick="shakeNo()">😅 Qué penoso...</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h2>¡De nada! 😄🌸</h2>
+      <p>Me alegra que te haya llegado el mensaje. Espero que tu día esté genial, <strong>Scarlet</strong>! ☀️✨<br/><br/>
+         ¡Nos vemos pronto! 👋😊</p>
+      <button class="modal-btn" onclick="closeModal()">¡Igualmente! 💫</button>
+    </div>
+  </div>
+
+  <script>
+    function showModal() {
+      document.getElementById('modal').classList.add('show');
+    }
+    function closeModal() {
+      document.getElementById('modal').classList.remove('show');
+    }
+    function shakeNo() {
+      const btn = document.getElementById('btn-no');
+      btn.textContent = '😂 ¡Sí te gustó!';
+      setTimeout(() => { btn.textContent = '🤭 Admítelo...'; }, 1200);
+      setTimeout(() => { btn.textContent = '😅 Qué penoso...'; }, 2400);
+    }
+    document.getElementById('modal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+  </script>
+</body>
+</html>
